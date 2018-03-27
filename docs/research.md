@@ -14,4 +14,9 @@
 * [MPU6050 datasheet](https://store.invensense.com/datasheets/invensense/MPU-6050_DataSheet_V3%204.pdf)
 * [Ep. 57 Arduino Accelerometer & Gyroscope Tutorial MPU-6050 6DOF Module](https://www.youtube.com/watch?v=M9lZ5Qy5S2s&t=1090s)
 * [MPU-6050 6dof IMU tutorial for auto-leveling quadcopters with Arduino source code](https://www.youtube.com/watch?v=4BoIE8YQwM8)
-* [Tutorial: Gyroscope and Accelerometer (GY-521/MPU6050) with Arduino | UATS A&S #12](https://www.youtube.com/watch?v=wTfSfhjhAU0)
+* [Tutorial: Gyroscope and Accelerometer (GY-521/MPU6050) with Arduino](https://www.youtube.com/watch?v=wTfSfhjhAU0)
+
+## Quadrature Encoders
+* [1x 2x and 4x encoding](https://www.motioncontroltips.com/faq-what-do-x1-x2-and-x4-position-encoding-mean-for-incremental-encoders/)
+* [Encoders](https://tutorial.cytron.io/2012/01/17/quadrature-encoder/)
+* [Quadrature Encoders](http://www.helicron.net/avr/quadrature-decoders/)
