@@ -1,6 +1,3 @@
----
-layout: post
-title: Bluetooth with ESP32
----
+# Self Balancing Robot
 
-# Bluetooth with ESP32
+My adventures building a simple self-balancing (inverted pendulum) robot
