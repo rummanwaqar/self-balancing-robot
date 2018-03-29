@@ -11492,10 +11492,10 @@ TRI-COLOR LED</description>
 </classes>
 <parts>
 <part name="U1" library="SparkFun-IC-Microcontroller" library_urn="urn:adsk.eagle:library:525" deviceset="ATMEGA328P_PDIP" device="" package3d_urn="urn:adsk.eagle:package:38942/1" value="328P"/>
-<part name="Y1" library="SparkFun-Clocks" library_urn="urn:adsk.eagle:library:511" deviceset="CRYSTAL" device="PTH-HC49UV" package3d_urn="urn:adsk.eagle:package:37511/1"/>
-<part name="C1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="C-EU" device="025-025X050" package3d_urn="urn:adsk.eagle:package:26151/1"/>
-<part name="C2" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="C-EU" device="025-025X050" package3d_urn="urn:adsk.eagle:package:26151/1"/>
-<part name="C3" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="C-EU" device="025-025X050" package3d_urn="urn:adsk.eagle:package:26151/1"/>
+<part name="Y1" library="SparkFun-Clocks" library_urn="urn:adsk.eagle:library:511" deviceset="CRYSTAL" device="PTH-HC49UV" package3d_urn="urn:adsk.eagle:package:37511/1" value="14.7 MHz"/>
+<part name="C1" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="C-EU" device="025-025X050" package3d_urn="urn:adsk.eagle:package:26151/1" value="22pF"/>
+<part name="C2" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="C-EU" device="025-025X050" package3d_urn="urn:adsk.eagle:package:26151/1" value="22pF"/>
+<part name="C3" library="resistor" library_urn="urn:adsk.eagle:library:348" deviceset="C-EU" device="025-025X050" package3d_urn="urn:adsk.eagle:package:26151/1" value="0.1uF"/>
 <part name="ISP" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="AVRISP" device="-BOX"/>
 <part name="J1" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="6_PIN_SERIAL_CABLE" device="PTH" package3d_urn="urn:adsk.eagle:package:38027/1"/>
 <part name="SUPPLY1" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
@@ -11541,10 +11541,16 @@ TRI-COLOR LED</description>
 </plain>
 <instances>
 <instance part="U1" gate="G$1" x="45.72" y="35.56"/>
-<instance part="Y1" gate="G$1" x="17.78" y="33.02" rot="R270"/>
+<instance part="Y1" gate="G$1" x="17.78" y="33.02" smashed="yes" rot="R270">
+<attribute name="NAME" x="19.812" y="33.02" size="1.778" layer="95" font="vector" rot="R270" align="bottom-center"/>
+<attribute name="VALUE" x="20.828" y="25.4" size="1.778" layer="96" font="vector" rot="R270" align="top-center"/>
+</instance>
 <instance part="C1" gate="G$1" x="12.7" y="38.1" rot="R90"/>
-<instance part="C2" gate="G$1" x="12.7" y="27.94" rot="R90"/>
-<instance part="C3" gate="G$1" x="12.7" y="45.72" rot="R90"/>
+<instance part="C2" gate="G$1" x="12.7" y="27.94" smashed="yes" rot="R90">
+<attribute name="NAME" x="12.319" y="29.464" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="17.399" y="21.844" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="C3" gate="G$1" x="10.16" y="45.72" rot="R90"/>
 <instance part="ISP" gate="G$1" x="17.78" y="83.82"/>
 <instance part="J1" gate="G$1" x="60.96" y="78.74" rot="R90"/>
 <instance part="SUPPLY1" gate="GND" x="20.32" y="2.54"/>
@@ -11616,7 +11622,7 @@ TRI-COLOR LED</description>
 <segment>
 <pinref part="C3" gate="G$1" pin="1"/>
 <pinref part="SUPPLY3" gate="GND" pin="GND"/>
-<wire x1="10.16" y1="45.72" x2="2.54" y2="45.72" width="0.1524" layer="91"/>
+<wire x1="7.62" y1="45.72" x2="2.54" y2="45.72" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="U1" gate="G$1" pin="GND@2"/>
@@ -11678,7 +11684,7 @@ TRI-COLOR LED</description>
 <segment>
 <pinref part="C3" gate="G$1" pin="2"/>
 <pinref part="U1" gate="G$1" pin="AREF"/>
-<wire x1="17.78" y1="45.72" x2="22.86" y2="45.72" width="0.1524" layer="91"/>
+<wire x1="15.24" y1="45.72" x2="22.86" y2="45.72" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="+5V" class="0">
