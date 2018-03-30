@@ -15,7 +15,8 @@
 #define F_CPU 14745600UL
 
 // UART Config
-#define UART_BAUD_RATE	115200
+#define USART_BAUDRATE			115200
+#define UART_MAX_BUFFER_SIZE	100		// uart input char buffer size
 
 // LEDs
 #define LED_PORT		C
