@@ -12,7 +12,7 @@
 /*
  * Pin definitions
  */
-#define F_CPU 1843200UL
+#define F_CPU 14745600UL
 
 // UART Config
 #define UART_BAUD_RATE	115200

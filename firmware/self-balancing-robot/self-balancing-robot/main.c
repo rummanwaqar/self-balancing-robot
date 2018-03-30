@@ -8,6 +8,7 @@
 #include "defines.h"
 
 #include <avr/io.h>
+#include <avr/sfr_defs.h>
 #include <util/delay.h>
 
 void gpio_init(void);
