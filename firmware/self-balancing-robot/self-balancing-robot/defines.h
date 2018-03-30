@@ -24,6 +24,16 @@
 #define LED_BLUE		2
 #define LED_GREEN		3
 
+// Encoder pins
+#define EN_1A_PORT		D
+#define EN_1A_PIN		2
+#define EN_1B_PORT		C
+#define EN_1B_PIN		0
+#define EN_2A_PORT		D
+#define EN_2A_PIN		3
+#define EN_2B_PORT		D
+#define EN_2B_PIN		4
+
 /*
  * Macros definitions
  */
