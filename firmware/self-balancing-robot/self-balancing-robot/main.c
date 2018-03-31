@@ -42,13 +42,13 @@ int main(void)
     {
 		if(i2c_start(ADDR | I2C_WRITE) == 0)
 		{
-			//i2c_write(MPU6050_RA_WHO_AM_I);
-			//_delay_us(10);
-			//i2c_rep_start(ADDR | I2C_READ);
-			//ret = i2c_readNak();                    // read one byte from EEPROM
+			i2c_write(MPU6050_RA_WHO_AM_I);
+			_delay_us(10);
+			i2c_rep_start(ADDR | I2C_READ);
+			ret = i2c_readNak();                    // read one byte from EEPROM
 			i2c_stop();
-			//itoa(ret, buffer, 16);
-			//printf("Result: 0x%s\n", buffer);
+			itoa(ret, buffer, 16);
+			printf("Result: 0x%s\n", buffer);
 		}
 		else
 		{
