@@ -148,6 +148,18 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="mpu6050.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mpu6050.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mpu6050dmp6.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mpu6050registers.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="uart.c">
       <SubType>compile</SubType>
     </Compile>

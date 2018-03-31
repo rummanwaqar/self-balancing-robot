@@ -17,12 +17,9 @@
 
 #include "uart.h"
 #include "i2cmaster.h"
+#include "mpu6050.h"
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_RW);
-
-#define ADDR (0x68 << 1)
-#define MPU6050_RA_WHO_AM_I         0x75
-
 
 void gpio_init(void);
 
@@ -35,26 +32,31 @@ int main(void)
 	
 	sei();
 	
-	char buffer[10];
-	unsigned char ret;
-
+	//init mpu6050
+	mpu6050_init();
+	_delay_ms(50);
+	
+	int16_t ax = 0;
+	int16_t ay = 0;
+	int16_t az = 0;
+	int16_t gx = 0;
+	int16_t gy = 0;
+	int16_t gz = 0;
+	double axg = 0;
+	double ayg = 0;
+	double azg = 0;
+	double gxds = 0;
+	double gyds = 0;
+	double gzds = 0;
+	
     while (1) 
     {
-		if(i2c_start(ADDR | I2C_WRITE) == 0)
-		{
-			i2c_write(MPU6050_RA_WHO_AM_I);
-			_delay_us(10);
-			i2c_rep_start(ADDR | I2C_READ);
-			ret = i2c_readNak();                    // read one byte from EEPROM
-			i2c_stop();
-			itoa(ret, buffer, 16);
-			printf("Result: 0x%s\n", buffer);
-		}
-		else
-		{
-			printf("Failed");
-		}
-		
+		mpu6050_getRawData(&ax, &ay, &az, &gx, &gy, &gz);
+		mpu6050_getConvData(&axg, &ayg, &azg, &gxds, &gyds, &gzds);
+
+		printf("$%d %d %d;\n", ax,ay,az);
+
+		_delay_ms(100);
 		
 		
 		PORT(LED_PORT) ^= _BV(LED_RED);
