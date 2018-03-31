@@ -516,12 +516,12 @@ void mpu6050_getConvData(double* axg, double* ayg, double* azg, double* gxds, do
 	mpu6050_getRawData(&ax, &ay, &az, &gx, &gy, &gz);
 
 	#if MPU6050_CALIBRATEDACCGYRO == 1
-    *axg = (double)(ax-MPU6050_AXOFFSET)/MPU6050_AXGAIN;
-    *ayg = (double)(ay-MPU6050_AYOFFSET)/MPU6050_AYGAIN;
-    *azg = (double)(az-MPU6050_AZOFFSET)/MPU6050_AZGAIN;
-    *gxds = (double)(gx-MPU6050_GXOFFSET)/MPU6050_GXGAIN;
-	*gyds = (double)(gy-MPU6050_GYOFFSET)/MPU6050_GYGAIN;
-	*gzds = (double)(gz-MPU6050_GZOFFSET)/MPU6050_GZGAIN;
+    *axg = (double)(ax-MPU6050_AXOFFSET)/MPU6050_AGAIN;
+    *ayg = (double)(ay-MPU6050_AYOFFSET)/MPU6050_AGAIN;
+    *azg = (double)(az-MPU6050_AZOFFSET)/MPU6050_AGAIN;
+    *gxds = (double)(gx-MPU6050_GXOFFSET)/MPU6050_GGAIN;
+	*gyds = (double)(gy-MPU6050_GYOFFSET)/MPU6050_GGAIN;
+	*gzds = (double)(gz-MPU6050_GZOFFSET)/MPU6050_GGAIN;
 	#else
     *axg = (double)(ax)/MPU6050_AGAIN;
     *ayg = (double)(ay)/MPU6050_AGAIN;
@@ -638,12 +638,12 @@ void mpu6050_updateQuaternion() {
     gz = (((int16_t)buffer[12]) << 8) | buffer[13];
 
 	#if MPU6050_CALIBRATEDACCGYRO == 1
-	axg = (double)(ax-MPU6050_AXOFFSET)/MPU6050_AXGAIN;
-	ayg = (double)(ay-MPU6050_AYOFFSET)/MPU6050_AYGAIN;
-	azg = (double)(az-MPU6050_AZOFFSET)/MPU6050_AZGAIN;
-	gxrs = (double)(gx-MPU6050_GXOFFSET)/MPU6050_GXGAIN*0.01745329; //degree to radians
-	gyrs = (double)(gy-MPU6050_GYOFFSET)/MPU6050_GYGAIN*0.01745329; //degree to radians
-	gzrs = (double)(gz-MPU6050_GZOFFSET)/MPU6050_GZGAIN*0.01745329; //degree to radians
+	axg = (double)(ax-MPU6050_AXOFFSET)/MPU6050_AGAIN;
+	ayg = (double)(ay-MPU6050_AYOFFSET)/MPU6050_AGAIN;
+	azg = (double)(az-MPU6050_AZOFFSET)/MPU6050_AGAIN;
+	gxrs = (double)(gx-MPU6050_GXOFFSET)/MPU6050_GGAIN*0.01745329; //degree to radians
+	gyrs = (double)(gy-MPU6050_GYOFFSET)/MPU6050_GGAIN*0.01745329; //degree to radians
+	gzrs = (double)(gz-MPU6050_GZOFFSET)/MPU6050_GGAIN*0.01745329; //degree to radians
 	#else
 	axg = (double)(ax)/MPU6050_AGAIN;
 	ayg = (double)(ay)/MPU6050_AGAIN;
@@ -662,6 +662,7 @@ void mpu6050_updateQuaternion() {
  */
 ISR(TIMER0_OVF_vect) {
 	mpu6050_updateQuaternion();
+	PORT(LED_PORT) ^= _BV(LED_GREEN);
 }
 
 /*

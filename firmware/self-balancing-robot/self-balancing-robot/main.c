@@ -28,7 +28,6 @@ int main(void)
 	stdout = &uart_stream;
 	gpio_init();
 	uart_init();
-	i2c_init();
 	
 	sei();
 	
@@ -36,27 +35,39 @@ int main(void)
 	mpu6050_init();
 	_delay_ms(50);
 	
-	int16_t ax = 0;
-	int16_t ay = 0;
-	int16_t az = 0;
-	int16_t gx = 0;
-	int16_t gy = 0;
-	int16_t gz = 0;
-	double axg = 0;
-	double ayg = 0;
-	double azg = 0;
-	double gxds = 0;
-	double gyds = 0;
-	double gzds = 0;
+	//mpu6050_dmpInitialize();
+	//mpu6050_dmpEnable();
+	_delay_ms(10);
+	
+	
+	int ax, ay, az, gx, gy, gz;
+	double axg, ayg, azg, gxds, gyds, gzds;
+	double qw = 1.0f;
+	double qx = 0.0f;
+	double qy = 0.0f;
+	double qz = 0.0f;
+	double roll = 0.0f;
+	double pitch = 0.0f;
+	double yaw = 0.0f;
+	
+	char temp[10];
 	
     while (1) 
     {
+		//if(mpu6050_getQuaternionWait(&qw, &qx, &qy, &qz)) {
+			//mpu6050_getRollPitchYaw(qw, qx, qy, qz, &roll, &pitch, &yaw);
+		//}
+		
+		// for MAHONY filter
+		//mpu6050_getQuaternion(&qw, &qx, &qy, &qz);
+		//mpu6050_getRollPitchYaw(&roll, &pitch, &yaw);
+		// for no filter
 		mpu6050_getRawData(&ax, &ay, &az, &gx, &gy, &gz);
-		mpu6050_getConvData(&axg, &ayg, &azg, &gxds, &gyds, &gzds);
-
-		printf("$%d %d %d;\n", ax,ay,az);
-
-		_delay_ms(100);
+		//mpu6050_getConvData(&axg, &ayg, &azg, &gxds, &gyds, &gzds);
+		
+		
+		
+		
 		
 		
 		PORT(LED_PORT) ^= _BV(LED_RED);
