@@ -21,3 +21,8 @@ void motor_get_speed(int16_t* motor1, int16_t* motor2);
  * set motor speed (0-100%) using pwm
  */
 void motor_set_speed(int8_t motor1, int8_t motor2);
+
+/*
+ * get encoder count
+ */
+void motor_get_encoder(long* enc1, long* enc2);

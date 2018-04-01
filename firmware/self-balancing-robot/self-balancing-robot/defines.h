@@ -25,10 +25,10 @@
 #define LED_GREEN		3
 
 // Encoder pins
-#define EN_1A_PORT		D
-#define EN_1A_PIN		2
-#define EN_1B_PORT		C
-#define EN_1B_PIN		0
+#define EN_1A_PORT		B
+#define EN_1A_PIN		1
+#define EN_1B_PORT		B
+#define EN_1B_PIN		2
 #define EN_2A_PORT		D
 #define EN_2A_PIN		3
 #define EN_2B_PORT		D
@@ -43,8 +43,8 @@
 #define MOTOR_DIR2_PIN	7
 
 // Encoder params
-#define ENC_RATE		20.0		// speed calc at 20 Hz
-#define ENC_MODE		2.0			// 2x Quadrature mode
+#define ENC_RATE		50.0		// speed calc at 50 Hz
+#define ENC_MODE		4.0			// 4x Quadrature mode
 #define ENC_COUNT_REV	700.0		// encoder counts per revolution
 
 // Motor params

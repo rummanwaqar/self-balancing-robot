@@ -39,10 +39,13 @@ int main(void)
 	motor_set_speed(0,0);
 
 	int speed1, speed2;
+	long enc1, enc2;
     while (1) 
     {
 		motor_get_speed(&speed1, &speed2);
-		printf("%d %d\n", (int)speed1, (int)speed2);
+		motor_get_encoder(&enc1, &enc2);
+		
+		printf("%d %d %ld %ld\n", (int)speed1, (int)speed2, enc1, enc2);
 		
 		PORT(LED_PORT) ^= _BV(LED_RED);
 		_delay_ms(200);
