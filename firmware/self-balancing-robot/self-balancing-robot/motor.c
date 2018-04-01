@@ -20,6 +20,9 @@ volatile long enc2 = 0;
 volatile float speed1 = 0;
 volatile float speed2 = 0;
 
+// convert encoders to RPM
+#define ENC_CONST	(ENC_RATE) / (ENC_MODE * ENC_COUNT_REV) * 60.0
+
 void motor_init(void)
 {
 	init_encoders();
@@ -91,11 +94,11 @@ ISR(TIMER2_COMPA_vect)
 	
 	if(count == 50)
 	{
-		// calculate speeds every 50ms
+		// calculate speeds at 20 Hz
 		ATOMIC_BLOCK(ATOMIC_FORCEON)
 		{
-			speed1 = (float)enc1 * 20.0 / 1400.0 * 60.0;
-			speed2 = (float)enc2 * 20.0 / 1400.0 * 60.0;
+			speed1 = (float)enc1 * ENC_CONST;
+			speed2 = (float)enc2 * ENC_CONST;
 			enc1 = enc2 = 0;
 		}
 		count = 0;

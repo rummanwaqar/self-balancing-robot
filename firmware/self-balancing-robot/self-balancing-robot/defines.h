@@ -34,6 +34,11 @@
 #define EN_2B_PORT		D
 #define EN_2B_PIN		4
 
+// Encoder params
+#define ENC_RATE		20.0		// speed calc at 20 Hz
+#define ENC_MODE		2.0			// 2x Quadrature mode
+#define ENC_COUNT_REV	700.0		// encoder counts per revolution
+
 /*
  * Macros definitions
  */
