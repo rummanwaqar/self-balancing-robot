@@ -33,11 +33,20 @@
 #define EN_2A_PIN		3
 #define EN_2B_PORT		D
 #define EN_2B_PIN		4
+// Motor pins
+#define MOTOR_PORT		D
+#define MOTOR_1_PIN		5
+#define MOTOR_2_PIN		6
 
 // Encoder params
 #define ENC_RATE		20.0		// speed calc at 20 Hz
 #define ENC_MODE		2.0			// 2x Quadrature mode
 #define ENC_COUNT_REV	700.0		// encoder counts per revolution
+
+// Motor params
+#define MOTOR_1			OCR0B
+#define MOTOR_2			OCR0A
+#define MOTOR_MIN_PWM	40
 
 /*
  * Macros definitions

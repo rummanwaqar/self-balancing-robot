@@ -14,6 +14,7 @@
 // private functions 
 void init_encoders(void);
 void motor_timer_init(void);
+void setup_pwm();
 
 volatile long enc1 = 0;
 volatile long enc2 = 0;
@@ -27,6 +28,7 @@ void motor_init(void)
 {
 	init_encoders();
 	motor_timer_init();
+	setup_pwm();
 }
 
 void init_encoders(void)
@@ -42,16 +44,38 @@ void init_encoders(void)
 	EIMSK |= _BV(INT1) | _BV(INT0);		// enable both interrupts
 }
 
+/*
+ * setup timers for motor speed PWM
+ */
+void setup_pwm(void)
+{
+	// set up timer0
+	MOTOR_1 = 0;
+	MOTOR_2 = 0;
+	TCCR0A |= _BV(WGM00);						// Phase Correct PWM
+	TCCR0A |= _BV(COM0A1) | _BV(COM0B1);		// non-inverting (on clear)
+	TCCR0B |= _BV(CS00);						// start timer0 (28.9 kHz) PS=1
+	
+	// set up pins
+	DDR(MOTOR_PORT) |= (_BV(MOTOR_1_PIN) | _BV(MOTOR_2_PIN));
+}
+
 void motor_timer_init(void)
 {
 	// enable timer2 for speed calculation
-	TCCR2A |= (1<<WGM21)|(1<<COM2A1);	// CTC mode
+	TCCR2A |= (1<<WGM21);				// CTC mode
 	TCCR2B |= (1<<CS22);				// ps=64;
-	TIMSK2 |= (1<< OCIE2A);
+	TIMSK2 |= (1<< OCIE2A);				// interrupt on compare match
 	OCR2A = 229;						// 1 kHz
 }
 
-void motor_speed(int16_t* motor1, int16_t* motor2)
+void motor_set_speed(int8_t motor1, int8_t motor2)
+{
+	MOTOR_1 = motor1;
+	MOTOR_2 = motor2;
+}
+
+void motor_get_speed(int16_t* motor1, int16_t* motor2)
 {
 	ATOMIC_BLOCK(ATOMIC_FORCEON)
 	{

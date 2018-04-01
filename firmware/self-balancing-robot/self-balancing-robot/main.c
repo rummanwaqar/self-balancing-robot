@@ -29,12 +29,14 @@ int main(void)
 	uart_init();
 	motor_init();
 	
-	sei();	
+	sei();
+	
+	motor_set_speed(100, 100);
 
 	int speed1, speed2;
     while (1) 
     {
-		motor_speed(&speed1, &speed2);
+		motor_get_speed(&speed1, &speed2);
 		printf("%d %d\n", (int)speed1, (int)speed2);
 		
 		//PORT(LED_PORT) ^= _BV(LED_RED);

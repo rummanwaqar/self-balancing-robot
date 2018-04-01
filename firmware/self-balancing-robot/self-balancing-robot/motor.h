@@ -6,4 +6,5 @@
  */ 
 
 void motor_init(void);
-void motor_speed(int16_t* motor1, int16_t* motor2);
+void motor_get_speed(int16_t* motor1, int16_t* motor2);
+void motor_set_speed(int8_t motor1, int8_t motor2);
