@@ -11534,10 +11534,12 @@ TRI-COLOR LED</description>
 <plain>
 <text x="81.28" y="22.86" size="1.778" layer="96">(OC0B)
 (OC0A)</text>
-<text x="81.28" y="60.96" size="1.778" layer="95">PCINT(8-13)</text>
-<text x="81.28" y="27.94" size="1.778" layer="95">PCINT(16-23)</text>
 <text x="12.7" y="114.3" size="2.54" layer="95">Self Balancing Robot v1.0</text>
 <frame x1="-50.8" y1="-73.66" x2="111.76" y2="127" columns="8" rows="5" layer="97"/>
+<text x="81.28" y="30.48" size="1.778" layer="97">PCINT19</text>
+<text x="81.28" y="27.94" size="1.778" layer="97">PCINT20</text>
+<text x="81.28" y="12.7" size="1.778" layer="97">PCINT1</text>
+<text x="81.28" y="10.16" size="1.778" layer="97">PCINT2</text>
 </plain>
 <instances>
 <instance part="U1" gate="G$1" x="45.72" y="35.56"/>
@@ -11875,9 +11877,9 @@ TRI-COLOR LED</description>
 <label x="22.86" y="-17.78" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="G$1" pin="PD2(INT0)"/>
-<wire x1="71.12" y1="33.02" x2="73.66" y2="33.02" width="0.1524" layer="91"/>
-<label x="73.66" y="33.02" size="1.778" layer="95"/>
+<pinref part="U1" gate="G$1" pin="PB1(OC1A)"/>
+<wire x1="71.12" y1="12.7" x2="73.66" y2="12.7" width="0.1524" layer="91"/>
+<label x="73.66" y="12.7" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="EN1B" class="0">
@@ -11887,9 +11889,9 @@ TRI-COLOR LED</description>
 <label x="22.86" y="-20.32" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U1" gate="G$1" pin="PC0(ADC0)"/>
-<wire x1="71.12" y1="60.96" x2="73.66" y2="60.96" width="0.1524" layer="91"/>
-<label x="73.66" y="60.96" size="1.778" layer="95"/>
+<pinref part="U1" gate="G$1" pin="PB2(SS/OC1B)"/>
+<wire x1="71.12" y1="10.16" x2="73.66" y2="10.16" width="0.1524" layer="91"/>
+<label x="73.66" y="10.16" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="EN2A" class="0">
