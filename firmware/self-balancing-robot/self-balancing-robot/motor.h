@@ -11,6 +11,12 @@
 void motor_init(void);
 
 /*
+ * Calculates motor speed
+ @param freq: frequency at which this function is called
+ */
+void motor_calculate_speed(int freq);
+
+/*
  * get motor speed
  * param motor1: memory space to store motor1 value
  * param motor2: memory space to store motor2 value

@@ -26,14 +26,13 @@ volatile float speed1 = 0;
 volatile float speed2 = 0;
 
 // convert encoders to RPM
-#define ENC_CONST	(ENC_RATE) / (ENC_MODE * ENC_COUNT_REV) * 60.0
+#define ENC_CONST	1.0 / (ENC_MODE * ENC_COUNT_REV) * 60.0
 
-const int QEM[16] = {0,1,+1,0,-1,0,0,+1,+1,0,0,-1,0,-1,+1,0}; // Quadrature Encoder Matrix
+const int QEM[16] = {0,1,-1,0,-1,0,0,+1,+1,0,0,-1,0,-1,+1,0}; // Quadrature Encoder Matrix
 
 void motor_init(void)
 {
 	init_encoders();
-	motor_timer_init();
 	setup_pwm();
 }
 
@@ -74,15 +73,6 @@ void setup_pwm(void)
 	DDR(MOTOR_DIR1_PORT) |= (_BV(MOTOR_DIR1_PIN));
 	DDR(MOTOR_DIR2_PORT) |= (_BV(MOTOR_DIR1_PIN));
 	
-}
-
-void motor_timer_init(void)
-{
-	// enable timer2 for speed calculation
-	TCCR2A |= (1<<WGM21);				// CTC mode
-	TCCR2B |= (1<<CS22);				// ps=64;
-	TIMSK2 |= (1<< OCIE2A);				// interrupt on compare match
-	OCR2A = 229;						// 1 kHz
 }
 
 void motor_set_speed(int8_t motor1, int8_t motor2)
@@ -164,25 +154,14 @@ ISR(PCINT2_vect)
 /*
  * Speed calculation
  */
-ISR(TIMER2_COMPA_vect)
+void motor_calculate_speed(int freq)
 {
-	static uint8_t count = 0;
-	
-	if(count == 1000/(int)ENC_RATE)
+	ATOMIC_BLOCK(ATOMIC_FORCEON)
 	{
-		// calculate speeds at 50 Hz
-		ATOMIC_BLOCK(ATOMIC_FORCEON)
-		{
-			speed1 = (float)enc1 * ENC_CONST;
-			speed2 = (float)enc2 * ENC_CONST;
-			enc1_total += enc1;
-			enc2_total += enc2;
-			enc1 = enc2 = 0;
-		}
-		count = 0;
-	}
-	else
-	{
-		count++;
+		speed1 = (float)enc1 * freq * ENC_CONST;
+		speed2 = (float)enc2 * freq * ENC_CONST;
+		enc1_total += enc1;
+		enc2_total += enc2;
+		enc1 = enc2 = 0;
 	}
 }

@@ -9,9 +9,10 @@
 #ifndef _SBR_MISC_H_
 #define _SBR_MISC_H_
 
-long map(long x, long in_min, long in_max, long out_min, long out_max)
-{
-	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
+long map(long x, long in_min, long in_max, long out_min, long out_max);
+
+void tick_timer(void);
+
+void gpio_init(void);
 
 #endif /* MISC_H_ */

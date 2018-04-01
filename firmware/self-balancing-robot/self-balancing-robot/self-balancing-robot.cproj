@@ -160,6 +160,9 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="misc.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="mpu6050.c">
       <SubType>compile</SubType>
     </Compile>
@@ -170,8 +173,8 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="mpu6050registers.h">
-		<SubType>compile</SubType>
-	</Compile>
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="misc.h">
       <SubType>compile</SubType>
     </Compile>

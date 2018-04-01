@@ -52,6 +52,9 @@
 #define MOTOR_2			OCR0A
 #define MOTOR_MIN_PWM	15
 
+// Motor PID param
+#define PID_RATE		ENC_RATE	// run at encoder rate
+
 /*
  * MPU-6050 Settings
  */
