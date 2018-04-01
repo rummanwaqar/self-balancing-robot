@@ -30,6 +30,7 @@ int main(void)
 	gpio_init();
 	uart_init();
 	motor_init();
+	tick_timer();
 	
 	sei();
 	
@@ -86,4 +87,19 @@ void gpio_init(void)
 	// initialize LEDs as OFF
 	PORT(LED_PORT) |= ( _BV(LED_RED) | _BV(LED_GREEN) | _BV(LED_BLUE) );
 	DDR(LED_PORT) |= ( _BV(LED_RED) | _BV(LED_GREEN) | _BV(LED_BLUE) );
+}
+
+ISR(TIMER2_COMPA_vect)
+{
+	static uint8_t count = 0;
+	
+	if(count == 1000/(int)ENC_RATE)
+	{
+		motor_calculate_speed(ENC_RATE);
+		count = 0;
+	}
+	else
+	{
+		count++;
+	}
 }
