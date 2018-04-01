@@ -16,7 +16,6 @@
 #include <util/delay.h>
 
 #include "uart.h"
-#include "i2cmaster.h"
 #include "mpu6050.h"
 #include "motor.h"
 
