@@ -8,6 +8,7 @@
 #include "defines.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <avr/io.h>
 #include <avr/sfr_defs.h>
@@ -19,6 +20,10 @@
 #include "motor.h"
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_RW);
+
+#define ADDR (0x68 << 1)
+#define MPU6050_RA_WHO_AM_I         0x75
+
 
 void gpio_init(void);
 
@@ -39,7 +44,7 @@ int main(void)
 		motor_get_speed(&speed1, &speed2);
 		printf("%d %d\n", (int)speed1, (int)speed2);
 		
-		//PORT(LED_PORT) ^= _BV(LED_RED);
+		PORT(LED_PORT) ^= _BV(LED_RED);
 		_delay_ms(200);
     }
 }
