@@ -160,6 +160,9 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="misc.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="motor.c">
       <SubType>compile</SubType>
     </Compile>

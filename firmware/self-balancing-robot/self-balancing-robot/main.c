@@ -31,7 +31,7 @@ int main(void)
 	
 	sei();
 	
-	motor_set_speed(100, 100);
+	motor_set_speed(0,0);
 
 	int speed1, speed2;
     while (1) 

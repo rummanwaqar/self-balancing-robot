@@ -2,13 +2,15 @@
  * motor.c
  *
  * Created: 2018-03-31 7:12:56 PM
- *  Author: rumma
+ *  Author: rumman
  */ 
 
 #include "defines.h"
 #include <avr/io.h>
 #include <util/atomic.h>
+#include <stdlib.h>
 
+#include "misc.h"
 #include "motor.h"
 
 // private functions 
@@ -56,8 +58,14 @@ void setup_pwm(void)
 	TCCR0A |= _BV(COM0A1) | _BV(COM0B1);		// non-inverting (on clear)
 	TCCR0B |= _BV(CS00);						// start timer0 (28.9 kHz) PS=1
 	
-	// set up pins
+	// set up pwm pins
 	DDR(MOTOR_PORT) |= (_BV(MOTOR_1_PIN) | _BV(MOTOR_2_PIN));
+	// set up dir pins as output
+	PORT(MOTOR_DIR1_PORT) &= ~(_BV(MOTOR_DIR1_PIN));
+	PORT(MOTOR_DIR2_PORT) &= ~(_BV(MOTOR_DIR2_PIN));
+	DDR(MOTOR_DIR1_PORT) |= (_BV(MOTOR_DIR1_PIN));
+	DDR(MOTOR_DIR2_PORT) |= (_BV(MOTOR_DIR1_PIN));
+	
 }
 
 void motor_timer_init(void)
@@ -71,8 +79,39 @@ void motor_timer_init(void)
 
 void motor_set_speed(int8_t motor1, int8_t motor2)
 {
-	MOTOR_1 = motor1;
-	MOTOR_2 = motor2;
+	if(motor1 != 0)
+	{
+		MOTOR_1 = map(abs(motor1), 0, 100, MOTOR_MIN_PWM, 255);
+	}
+	else
+	{
+		MOTOR_1 = 0;
+	}
+	if(motor2 != 0)
+	{
+		MOTOR_2 = map(abs(motor2), 0, 100, MOTOR_MIN_PWM, 255);
+	}
+	else
+	{
+		MOTOR_2 = 0;
+	}
+	
+	if(motor1 < 0)
+	{
+		PORT(MOTOR_DIR1_PORT) |= _BV(MOTOR_DIR1_PIN);
+	}
+	else
+	{
+		PORT(MOTOR_DIR1_PORT) &= ~(_BV(MOTOR_DIR1_PIN));
+	}
+	if(motor2 < 0)
+	{
+		PORT(MOTOR_DIR2_PORT) |= _BV(MOTOR_DIR2_PIN);
+	}
+	else
+	{
+		PORT(MOTOR_DIR2_PORT) &= ~(_BV(MOTOR_DIR2_PIN));
+	}
 }
 
 void motor_get_speed(int16_t* motor1, int16_t* motor2)

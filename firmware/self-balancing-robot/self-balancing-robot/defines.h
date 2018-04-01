@@ -37,6 +37,10 @@
 #define MOTOR_PORT		D
 #define MOTOR_1_PIN		5
 #define MOTOR_2_PIN		6
+#define MOTOR_DIR1_PORT	B
+#define MOTOR_DIR1_PIN	0
+#define MOTOR_DIR2_PORT	D
+#define MOTOR_DIR2_PIN	7
 
 // Encoder params
 #define ENC_RATE		20.0		// speed calc at 20 Hz
@@ -46,7 +50,7 @@
 // Motor params
 #define MOTOR_1			OCR0B
 #define MOTOR_2			OCR0A
-#define MOTOR_MIN_PWM	40
+#define MOTOR_MIN_PWM	15
 
 /*
  * Macros definitions
