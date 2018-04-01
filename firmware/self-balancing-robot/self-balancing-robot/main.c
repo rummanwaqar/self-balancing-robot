@@ -17,6 +17,7 @@
 
 #include "uart.h"
 #include "i2cmaster.h"
+#include "motor.h"
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_RW);
 
@@ -31,40 +32,26 @@ int main(void)
 	stdout = &uart_stream;
 	gpio_init();
 	uart_init();
-	i2c_init();
+	motor_init();
 	
 	sei();
 	
-	char buffer[10];
-	unsigned char ret;
+	motor_set_speed(0,0);
 
+	int speed1, speed2;
     while (1) 
     {
-		if(i2c_start(ADDR | I2C_WRITE) == 0)
-		{
-			i2c_write(MPU6050_RA_WHO_AM_I);
-			_delay_us(10);
-			i2c_rep_start(ADDR | I2C_READ);
-			ret = i2c_readNak();                    // read one byte from EEPROM
-			i2c_stop();
-			itoa(ret, buffer, 16);
-			printf("Result: 0x%s\n", buffer);
-		}
-		else
-		{
-			printf("Failed");
-		}
-		
-		
+		motor_get_speed(&speed1, &speed2);
+		printf("%d %d\n", (int)speed1, (int)speed2);
 		
 		PORT(LED_PORT) ^= _BV(LED_RED);
-		_delay_ms(100);
+		_delay_ms(200);
     }
 }
 
 void gpio_init(void)
 {
+	// initialize LEDs as OFF
 	PORT(LED_PORT) |= ( _BV(LED_RED) | _BV(LED_GREEN) | _BV(LED_BLUE) );
 	DDR(LED_PORT) |= ( _BV(LED_RED) | _BV(LED_GREEN) | _BV(LED_BLUE) );
 }
-

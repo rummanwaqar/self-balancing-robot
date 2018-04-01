@@ -24,6 +24,34 @@
 #define LED_BLUE		2
 #define LED_GREEN		3
 
+// Encoder pins
+#define EN_1A_PORT		D
+#define EN_1A_PIN		2
+#define EN_1B_PORT		C
+#define EN_1B_PIN		0
+#define EN_2A_PORT		D
+#define EN_2A_PIN		3
+#define EN_2B_PORT		D
+#define EN_2B_PIN		4
+// Motor pins
+#define MOTOR_PORT		D
+#define MOTOR_1_PIN		5
+#define MOTOR_2_PIN		6
+#define MOTOR_DIR1_PORT	B
+#define MOTOR_DIR1_PIN	0
+#define MOTOR_DIR2_PORT	D
+#define MOTOR_DIR2_PIN	7
+
+// Encoder params
+#define ENC_RATE		20.0		// speed calc at 20 Hz
+#define ENC_MODE		2.0			// 2x Quadrature mode
+#define ENC_COUNT_REV	700.0		// encoder counts per revolution
+
+// Motor params
+#define MOTOR_1			OCR0B
+#define MOTOR_2			OCR0A
+#define MOTOR_MIN_PWM	15
+
 /*
  * Macros definitions
  */
@@ -34,6 +62,8 @@
 #define PORT(port) PORT_(port)
 #define DDR(port)  DDR_(port)
 #define PIN(port)  PIN_(port)
+
+#define READ_PIN(port, pin)	((PIN(port) & _BV(pin)) >> pin)
 
 /*
  * Custom data types
