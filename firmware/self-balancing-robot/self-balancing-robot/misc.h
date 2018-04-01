@@ -23,4 +23,11 @@ void tick_timer(void)
 	OCR2A = 229;						// 1 kHz
 }
 
+void gpio_init(void)
+{
+	// initialize LEDs as OFF
+	PORT(LED_PORT) |= ( _BV(LED_RED) | _BV(LED_GREEN) | _BV(LED_BLUE) );
+	DDR(LED_PORT) |= ( _BV(LED_RED) | _BV(LED_GREEN) | _BV(LED_BLUE) );
+}
+
 #endif /* MISC_H_ */
