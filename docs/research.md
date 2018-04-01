@@ -20,3 +20,4 @@
 * [1x 2x and 4x encoding](https://www.motioncontroltips.com/faq-what-do-x1-x2-and-x4-position-encoding-mean-for-incremental-encoders/)
 * [Encoders](https://tutorial.cytron.io/2012/01/17/quadrature-encoder/)
 * [Quadrature Encoders](http://www.helicron.net/avr/quadrature-decoders/)
+* [Implementation](https://cdn.sparkfun.com/datasheets/Robotics/How%20to%20use%20a%20quadrature%20encoder.pdf)
