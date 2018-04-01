@@ -21,6 +21,13 @@ FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_RW);
 
 void gpio_init(void);
 void init_encoders(void);
+void tick_timer(void);
+int8_t get_direction(uint8_t current, uint8_t prev);
+
+volatile long enc1 = 0;
+volatile long enc2 = 0;
+volatile float speed1 = 0;
+volatile float speed2 = 0;
 
 int main(void)
 {
@@ -29,35 +36,16 @@ int main(void)
 	uart_init();
 	i2c_init();
 	init_encoders();
+	tick_timer();
 	
-	sei();
-	
-	uint8_t address = 0;
-	
-	// initialize encoder
-	
+	sei();	
 
     while (1) 
     {
-
-		//i2c_rep_start((address << 1)+I2C_READ);       // set device address and read mode
-		//unsigned char ret = i2c_readNak();                    // read one byte from EEPROM
-		//i2c_stop();
-		//if(ret != 0)
-		//{
-			//puts("Found something");
-		//}
-		//
-		//
-		//address++;
-		//if(address > 127)
-		//{
-			//address = 0;
-			//puts("nothing found");
-		//}	
+		printf("%d %d\n", (int)speed1, (int)speed2);
 		
 		//PORT(LED_PORT) ^= _BV(LED_RED);
-		//_delay_ms(200);
+		_delay_ms(200);
     }
 }
 
@@ -81,27 +69,58 @@ void init_encoders(void)
 	EIMSK |= _BV(INT1) | _BV(INT0);		// enable both interrupts
 }
 
+void tick_timer(void)
+{
+	// enable timer2 for speed calculation
+	TCCR2A |= (1<<WGM21)|(1<<COM2A1);	// CTC mode
+	TCCR2B |= (1<<CS22);				// ps=64; 
+	TIMSK2 |= (1<< OCIE2A);
+	OCR2A = 229;						// 1 kHz
+}
+
 ISR(INT0_vect)
 {
-	if( PIN(EN_1A_PORT) & _BV(EN_1A_PIN) )
+	// state = AB
+	uint8_t state_current = (READ_PIN(EN_1A_PORT,EN_1A_PIN) << 1) | READ_PIN(EN_1B_PORT,EN_1B_PIN);
+	if(state_current == 0 || state_current == 3)	// CW
 	{
-		PORT(LED_PORT) |= _BV(LED_BLUE);
+		enc1++;
 	}
-	else
+	else if(state_current == 1 || state_current == 2)	// CCW
 	{
-		PORT(LED_PORT) &= ~(_BV(LED_BLUE));
+		enc1--;
 	}
-	 
 }
 
 ISR(INT1_vect)
 {
-	if( PIN(EN_2A_PORT) & _BV(EN_2A_PIN) )
+	// state = AB
+	uint8_t state_current = (READ_PIN(EN_2A_PORT,EN_2A_PIN) << 1) | READ_PIN(EN_2B_PORT,EN_2B_PIN);
+	if(state_current == 0 || state_current == 3)	// CW
 	{
-		PORT(LED_PORT) |= _BV(LED_GREEN);
+		enc2++;
+	}
+	else if(state_current == 1 || state_current == 2)	// CCW
+	{
+		enc2--;
+	}
+}
+
+ISR(TIMER2_COMPA_vect)
+{
+	static uint8_t count = 0;
+	
+	if(count == 50)
+	{
+		// calculate speeds every 50ms
+		speed1 = (float)enc1 * 20.0 / 1400.0 * 60.0;
+		speed2 = (float)enc2 * 20.0 / 1400.0 * 60.0;
+		enc1 = enc2 = 0;
+		count = 0;
 	}
 	else
 	{
-		PORT(LED_PORT) &= ~(_BV(LED_GREEN));
+		count++;
 	}
+	
 }

@@ -45,6 +45,8 @@
 #define DDR(port)  DDR_(port)
 #define PIN(port)  PIN_(port)
 
+#define READ_PIN(port, pin)	((PIN(port) & _BV(pin)) >> pin)
+
 /*
  * Custom data types
  */
