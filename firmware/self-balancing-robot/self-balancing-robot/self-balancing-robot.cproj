@@ -170,6 +170,8 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="mpu6050registers.h">
+		<SubType>compile</SubType>
+	</Compile>
     <Compile Include="misc.h">
       <SubType>compile</SubType>
     </Compile>

@@ -1,9 +1,9 @@
 /*
- * self-balancing-robot.c
- *
- * Created: 2018-03-29 7:45:28 PM
- * Author : rumman
- */ 
+* self-balancing-robot.c
+*
+* Created: 2018-03-29 7:45:28 PM
+* Author : rumman
+*/
 
 #include "defines.h"
 
@@ -29,16 +29,15 @@ int main(void)
 	stdout = &uart_stream;
 	gpio_init();
 	uart_init();
-  motor_init();
-  
-  sei();
+	motor_init();
 	
-  	
+	sei();
+	
 	motor_set_speed(0,0);
 
 	int speed1, speed2;
 	long enc1, enc2;
-  
+	
 	//init mpu6050
 	mpu6050_init();
 	_delay_ms(50);
@@ -46,7 +45,6 @@ int main(void)
 	//mpu6050_dmpInitialize();
 	//mpu6050_dmpEnable();
 	_delay_ms(10);
-	
 	
 	int ax, ay, az, gx, gy, gz;
 	double axg, ayg, azg, gxds, gyds, gzds;
@@ -59,11 +57,11 @@ int main(void)
 	double yaw = 0.0f;
 	
 	char temp[10];
-  
-   while (1) 
-    {
+	
+	while (1)
+	{
 		//if(mpu6050_getQuaternionWait(&qw, &qx, &qy, &qz)) {
-			//mpu6050_getRollPitchYaw(qw, qx, qy, qz, &roll, &pitch, &yaw);
+		//mpu6050_getRollPitchYaw(qw, qx, qy, qz, &roll, &pitch, &yaw);
 		//}
 		
 		// for MAHONY filter
@@ -80,7 +78,7 @@ int main(void)
 		
 		PORT(LED_PORT) ^= _BV(LED_RED);
 		_delay_ms(200);
-    }
+	}
 }
 
 void gpio_init(void)
