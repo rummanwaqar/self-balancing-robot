@@ -40,7 +40,7 @@ int main(void)
 
 	int speed1, speed2;
 	long enc1, enc2;
-    while (1) 
+    while (1)
     {
 		motor_get_speed(&speed1, &speed2);
 		motor_get_encoder(&enc1, &enc2);

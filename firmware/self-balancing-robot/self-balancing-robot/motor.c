@@ -28,7 +28,7 @@ volatile float speed2 = 0;
 // convert encoders to RPM
 #define ENC_CONST	(ENC_RATE) / (ENC_MODE * ENC_COUNT_REV) * 60.0
 
-const int QEM[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0}; // Quadrature Encoder Matrix
+const int QEM[16] = {0,1,+1,0,-1,0,0,+1,+1,0,0,-1,0,-1,+1,0}; // Quadrature Encoder Matrix
 
 void motor_init(void)
 {
