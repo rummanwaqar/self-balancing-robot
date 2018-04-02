@@ -61,7 +61,6 @@
 #define IMU_RATE		250.0		// imu integrated at 250Hz ~ 4ms
 #define MPU6050_I2CINIT 1			// init i2c in MPU6050
 #define MPU6050_ADDR (0x68 <<1)		// device address - 0x68 pin low (GND), 0x69 pin high (VCC)
-#define MPU6050_GETATTITUDE 	0	// fusion: DISABLED=0; MAHONY FILTER=1; DMP PROCESSOR=2
 //gyro and acc scale
 #define MPU6050_GYRO_FS MPU6050_GYRO_FS_1000
 #define MPU6050_ACCEL_FS MPU6050_ACCEL_FS_4
