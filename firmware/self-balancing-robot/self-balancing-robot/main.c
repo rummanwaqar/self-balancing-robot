@@ -21,7 +21,8 @@
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_RW);
 
-uint8_t pid_flag = 0;
+volatile uint8_t pid_flag = 0;
+volatile uint8_t imu_flag = 0;
 
 int main(void)
 {
@@ -56,6 +57,11 @@ int main(void)
 	double pitch = 0.0f;
 	double yaw = 0.0f;
 	
+	double acc_total_vector;
+	double angle_pitch_acc;
+	double angle_roll_acc;
+	double angle_yaw_acc;
+	
 	char temp[10];
 	
 	while (1)
@@ -68,16 +74,48 @@ int main(void)
 		//mpu6050_getQuaternion(&qw, &qx, &qy, &qz);
 		//mpu6050_getRollPitchYaw(&roll, &pitch, &yaw);
 		// for no filter
-		mpu6050_getRawData(&ax, &ay, &az, &gx, &gy, &gz);
-		//mpu6050_getConvData(&axg, &ayg, &azg, &gxds, &gyds, &gzds);
-
-		motor_get_speed(&speed1, &speed2);
-		motor_get_encoder(&enc1, &enc2);
+		if(imu_flag) // IMU_RATE
+		{
+			mpu6050_getRawData(&ax, &ay, &az, &gx, &gy, &gz);
+			mpu6050_getConvData(&axg, &ayg, &azg, &gxds, &gyds, &gzds);
+			yaw += gzds / IMU_RATE;
+			
+			pitch += gxds / IMU_RATE;	//Calculate the traveled pitch angle and add this to the angle_pitch variable
+			roll += gyds / IMU_RATE;
+			
+			//float temp = pitch + roll * sin(yaw * 3.142/180.0);	
+			//roll -= pitch * sin(yaw * 3.142/180.0);	//If the IMU has yawed transfer the pitch angle to the roll angel
+			//pitch = temp;
+			acc_total_vector = sqrt((axg*axg)+(ayg*ayg)+(azg*azg));
+			angle_pitch_acc = asin(ayg/acc_total_vector) * 180.0/3.142;
+			angle_roll_acc = asin(axg/acc_total_vector) * -180.0/3.142;
+			
+			// kalman filter
+			pitch = pitch * 0.9996 + angle_pitch_acc * 0.0004;     //Correct the drift of the gyro pitch angle with the accelerometer pitch angle
+			roll = roll * 0.9996 + angle_roll_acc * 0.0004;        //Correct the drift of the gyro roll angle with the accelerometer roll angle
+			
+			PORT(LED_PORT) ^= _BV(LED_RED);
+			imu_flag = 0;
+		}
 		
-		printf("%d %d %ld %ld\n", (int)speed1, (int)speed2, enc1, enc2);
+		//motor_get_speed(&speed1, &speed2);
+		//motor_get_encoder(&enc1, &enc2);
+		if(pid_flag)
+		{
+			dtostrf(pitch, 3, 2, temp);
+			printf("%s", temp);
+			dtostrf(roll, 3, 2, temp);
+			printf("\t%s", temp);
+			dtostrf(yaw, 3, 2, temp);
+			printf("\t%s\n", temp);
+			//printf("%d %d %d\n", ax, ay, az);
+			pid_flag = 0;
+			
+		}
+		//printf("%d %d %ld %ld\n", (int)speed1, (int)speed2, enc1, enc2);
 		
-		PORT(LED_PORT) ^= _BV(LED_RED);
-		_delay_ms(200);
+		//PORT(LED_PORT) ^= _BV(LED_RED);
+		//_delay_ms(200);
 	}
 }
 
@@ -88,9 +126,11 @@ ISR(TIMER2_COMPA_vect)
 {
 	static uint8_t count = 0;
 	static uint8_t pidCount = 0;
+	static uint8_t imuCount = 0;
 	
 	count++;
 	pidCount++;
+	imuCount++;
 	
 	if(count == 1000/(int)ENC_RATE)
 	{
@@ -102,5 +142,11 @@ ISR(TIMER2_COMPA_vect)
 	{
 		pid_flag = 1;
 		pidCount = 0;
+	}
+	
+	if(imuCount == 1000/(int)IMU_RATE)
+	{
+		imu_flag = 1;
+		imuCount = 0;
 	}
 }
