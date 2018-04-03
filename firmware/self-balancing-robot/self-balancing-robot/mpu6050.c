@@ -185,7 +185,7 @@ void mpu6050_init() {
 	//set digital low pass filter bandwidth to 98Hz 
 	mpu6050_writeBits(MPU6050_RA_CONFIG, MPU6050_CFG_DLPF_CFG_BIT, MPU6050_CFG_DLPF_CFG_LENGTH, MPU6050_DLPF_BW_98);
     //set sample rate 50Hz = gyro_rate (1Khz) / (1 + DIV) = 1000 / (1 + 19) => DIV = 19
-	mpu6050_writeByte(MPU6050_RA_SMPLRT_DIV, 19);
+	mpu6050_writeByte(MPU6050_RA_SMPLRT_DIV, MPU6050_CLOCK_DIV);
 	//set gyro range
 	mpu6050_writeBits(MPU6050_RA_GYRO_CONFIG, MPU6050_GCONFIG_FS_SEL_BIT, MPU6050_GCONFIG_FS_SEL_LENGTH, MPU6050_GYRO_FS);
 	//set accel range

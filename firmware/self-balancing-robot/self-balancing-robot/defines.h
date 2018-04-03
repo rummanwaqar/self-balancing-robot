@@ -56,13 +56,15 @@
 #define PID_RATE		ENC_RATE	// run at encoder rate
 
 // MPU6050 settings
-#define MPU6050_ADDR (0x68 <<1)		// device address - 0x68 pin low (GND), 0x69 pin high (VCC)
-#define MPU6050_GYRO_FS MPU6050_GYRO_FS_2000	// gyro scale
-#define MPU6050_ACCEL_FS MPU6050_ACCEL_FS_4		// accel scale
+#define MPU6050_ADDR		(0x68 <<1)				// device address - 0x68 pin low (GND), 0x69 pin high (VCC)
+#define MPU6050_GYRO_FS		MPU6050_GYRO_FS_2000	// gyro scale
+#define MPU6050_ACCEL_FS	MPU6050_ACCEL_FS_4		// accel scale
+#define MPU6050_CLOCK_DIV	19						// sampling rate 50Hz = (1Khz) / (1 + DIV) = 1000 / (1 + 19) => DIV = 19
 // Calibration
 #define MPU6050_AXOFFSET 336
 #define MPU6050_AYOFFSET -247
 #define MPU6050_AZOFFSET 51
+
 
 // Conversions Math
 #define PI				3.14159f
