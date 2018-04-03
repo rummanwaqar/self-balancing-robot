@@ -24,6 +24,9 @@
 #define LED_BLUE		2
 #define LED_GREEN		3
 
+// display settings
+#define DISP_RATE		20
+
 // Encoder pins
 #define EN_1A_PORT		B
 #define EN_1A_PIN		1
@@ -51,11 +54,15 @@
 // Motor params
 #define MOTOR_PWM1			OCR0B
 #define MOTOR_PWM2			OCR0A
-#define MOTOR_MAX_RPM		130		
+#define MOTOR_MAX_RPM		120		
 #define MOTOR_MAX_EFFORT	255
+#define MOTOR_MIN_EFFORT	15
 
 // Motor PID param
-#define PID_I_WINDUP		500
+#define PID_M_I_WINDUP		500
+#define PID_M_P				2.0f
+#define PID_M_I				0.5f
+#define PID_M_D				2.0f
 
 // MPU6050 settings
 #define MPU6050_ADDR		(0x68 <<1)				// device address - 0x68 pin low (GND), 0x69 pin high (VCC)
@@ -66,7 +73,6 @@
 #define MPU6050_AXOFFSET 336
 #define MPU6050_AYOFFSET -247
 #define MPU6050_AZOFFSET 51
-
 
 // Conversions Math
 #define PI				3.14159f
@@ -102,8 +108,49 @@ typedef struct {
 	Vector3_t gyro;
 } Imu_t;
 
+// pid structure
+typedef struct{
+	//! Last process value, used to find derivative of process value.
+	float lastProcessValue;
+	//! Summation of errors, used for integrate calculations
+	double sumError;
+	//! The Proportional tuning constant, multiplied with SCALING_FACTOR
+	float P_Factor;
+	//! The Integral tuning constant, multiplied with SCALING_FACTOR
+	float I_Factor;
+	//! The Derivative tuning constant, multiplied with SCALING_FACTOR
+	float D_Factor;
+	//! Maximum allowed error, avoid overflow
+	float maxError;
+	//! Maximum allowed sum error, avoid overflow
+	double maxSumError;
+	//! Maximum allowed effort (abs)
+	float maxEffort;
+} PidData_t;
+
+// motor object
+typedef struct {
+	float speed;
+	long enc;
+	int set_point;
+	int effort;
+	PidData_t pidData;
+} Motor_t;
+
+// display flags
+typedef struct {
+	char imu_raw:1;		// gyro and accel raw values
+	char imu_quat:1;	// pose in quat
+	char imu_rpy:1;		// pose in RPY
+	char motor_vel:1;	// motor vel
+	char motor_pid:1;	// motor setpoint, effort
+	char motor_enc:1;	// motor encoder counts
+} DispFlags_t;
+
 typedef enum {
-	CMD_NULL, CMD_M1, CMD_M2, CMD_M_P, CMD_M_I, CMD_M_D
+	CMD_NULL, 
+	CMD_M1, CMD_M2, CMD_M_P, CMD_M_I, CMD_M_D, 
+	CMD_DISP_IMU, CMD_DISP_QUAT, CMD_DISP_RPY, CMD_DISP_MVEL, CMD_DISP_MPID, CMD_DISP_MENC
 } Command_t;
 
 #endif /* DEFINES_H_ */

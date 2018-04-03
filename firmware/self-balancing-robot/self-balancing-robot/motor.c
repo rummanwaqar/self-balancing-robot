@@ -78,7 +78,7 @@ void setup_pwm(void)
 
 void motor_set_speed(int motor1, int motor2)
 {
-	if(motor1 > 0)
+	if(motor1 < 0)
 	{
 		PORT(MOTOR_DIR1_PORT) |= _BV(MOTOR_DIR1_PIN);
 		MOTOR_PWM1 = abs(motor1);

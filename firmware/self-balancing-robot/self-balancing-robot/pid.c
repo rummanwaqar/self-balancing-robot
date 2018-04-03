@@ -8,7 +8,7 @@
 
 #include "pid.h"
 
-void pid_init(float p_factor, float i_factor, float d_factor, double max_i_windup, PidData_t *pid)
+void pid_init(float p_factor, float i_factor, float d_factor, double max_i_windup, float effort_limit, PidData_t *pid)
 {
 	// Start values for PID controller
 	pid->sumError = 0.0;
@@ -19,11 +19,12 @@ void pid_init(float p_factor, float i_factor, float d_factor, double max_i_windu
 	pid->D_Factor = d_factor;
 	// Limits to avoid overflow
 	pid->maxSumError = max_i_windup;
+	pid->maxEffort = effort_limit;
 }
 
 float pid_controller(float setPoint, float processValue, PidData_t *pid_st)
 {
-	float error, p_term, d_term, i_term;
+	float error, p_term, d_term, i_term, effort;
 
 	error = setPoint - processValue;
 
@@ -41,7 +42,11 @@ float pid_controller(float setPoint, float processValue, PidData_t *pid_st)
 
 	pid_st->lastProcessValue = processValue;
 
-	return (p_term + i_term + d_term);
+	effort = p_term + i_term + d_term;
+	if(effort > pid_st->maxEffort) effort = MOTOR_MAX_EFFORT;
+	if(effort < -1 * MOTOR_MAX_EFFORT) effort = -1 * MOTOR_MAX_EFFORT;
+	
+	return effort;
 }
 
 void pid_reset(PidData_t *pid_st)

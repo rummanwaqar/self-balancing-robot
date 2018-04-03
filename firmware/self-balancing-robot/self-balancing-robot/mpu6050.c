@@ -278,5 +278,4 @@ ISR(INT0_vect)
 {
 	mpu6050_getRawData(&imu_data);
 	imu_flag = 1;
-	PORT(LED_PORT) ^= _BV(LED_GREEN);
 }
