@@ -8,6 +8,8 @@
 
 #include <avr/io.h>
 #include <avr/sfr_defs.h>
+#include <stdio.h>
+#include <string.h>
 #include <math.h>
 
 #include "defines.h"
@@ -55,4 +57,33 @@ Vector3 toEulerAngle(const float q0, const float q1, const float q2, const float
 	rpy.z = atan2(siny, cosy);
 	
 	return rpy;
+}
+
+Command parseCommand(char* input_string, int* value)
+{
+	char command[7];
+	int temp_val;
+	if(input_string[0] == '>')
+	{
+		if(sscanf(input_string+1, "%s %d", command, &temp_val ) )
+		{
+			if (strcmp(command, "m1") == 0)
+			{
+				if(temp_val <= MOTOR_MAX_RPM && temp_val >= MOTOR_MAX_RPM * -1)
+				{
+					*value = temp_val;
+					return CMD_M1;
+				}
+			}
+			else if (strcmp(command, "m2") == 0)
+			{
+				if(temp_val <= MOTOR_MAX_RPM && temp_val >= MOTOR_MAX_RPM * -1)
+				{
+					*value = temp_val;
+					return CMD_M2;
+				}
+			}
+		}
+	}
+	return CMD_NULL;
 }

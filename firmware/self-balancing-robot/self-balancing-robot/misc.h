@@ -17,4 +17,6 @@ void gpio_init(void);
 
 Vector3 toEulerAngle(const float q0, const float q1, const float q2, const float q3);
 
+Command parseCommand(char* input_string, int* value);
+
 #endif /* MISC_H_ */

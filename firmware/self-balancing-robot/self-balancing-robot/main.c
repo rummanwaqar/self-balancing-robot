@@ -32,14 +32,9 @@ int main(void)
 	gpio_init();
 	uart_init();
 	motor_init();
-	tick_timer();
+	//tick_timer();
 	
 	sei();
-	
-	motor_set_speed(0,0);
-
-	float speed1, speed2;
-	long enc1, enc2;
 	
 	//init mpu6050
 	//mpu6050_init();
@@ -48,6 +43,10 @@ int main(void)
 	
 	char temp[10];
 	Imu* imu_data;
+	float speed1, speed2;
+	long enc1, enc2;
+	char *input_string;
+	int set_point1 = 0, set_point2 = 0;
 	while (1)
 	{
 		if((imu_data = mpu6050_getData()) != 0)
@@ -82,7 +81,31 @@ int main(void)
 			dtostrf(speed2, 3, 2, temp); printf(",%s", temp);
 			printf(",%ld,%ld\n", enc1, enc2);
 		}
-	}
+		
+		// read commands
+		if(uart_input_available())
+		{
+			int value;
+			Command cmd;
+			input_string = uart_get_string();
+			cmd=parseCommand(input_string, &value);
+			switch (cmd)
+			{
+				case CMD_M1:
+					printf("=Motor1:%d\n", value);
+					set_point1 = value;
+					break;
+				case CMD_M2:
+					printf("=Motor2:%d\n", value);
+					set_point2 = value;
+					break;	
+				default:
+					break;				
+			}
+		}
+		motor_set_speed(set_point1, set_point2);
+		
+	} // end of while loop
 }
 
 /*

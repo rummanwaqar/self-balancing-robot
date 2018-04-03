@@ -50,6 +50,7 @@
 // Motor params
 #define MOTOR_PWM1			OCR0B
 #define MOTOR_PWM2			OCR0A
+#define MOTOR_MAX_RPM		130			
 
 // Motor PID param
 #define PID_RATE		ENC_RATE	// run at encoder rate
@@ -98,5 +99,9 @@ typedef struct {
 	Vector3 accel;
 	Vector3 gyro;
 } Imu;
+
+typedef enum {
+	CMD_NULL, CMD_M1, CMD_M2
+} Command;
 
 #endif /* DEFINES_H_ */
