@@ -11988,6 +11988,18 @@ TRI-COLOR LED</description>
 <pinref part="SUPPLY13" gate="1" pin="+5V"/>
 </segment>
 </net>
+<net name="IMU_INT" class="0">
+<segment>
+<pinref part="U2" gate="G$1" pin="INT"/>
+<wire x1="58.42" y1="-50.8" x2="55.88" y2="-50.8" width="0.1524" layer="91"/>
+<label x="55.88" y="-50.8" size="1.778" layer="95" rot="R180"/>
+</segment>
+<segment>
+<pinref part="U1" gate="G$1" pin="PD2(INT0)"/>
+<wire x1="71.12" y1="33.02" x2="73.66" y2="33.02" width="0.1524" layer="91"/>
+<label x="73.66" y="33.02" size="1.778" layer="95"/>
+</segment>
+</net>
 </nets>
 </sheet>
 </sheets>
