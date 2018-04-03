@@ -43,14 +43,13 @@
 #define MOTOR_DIR2_PIN	7
 
 // Encoder params
-#define ENC_RATE		50.0		// speed calc at 50 Hz
+#define ENC_RATE		100.0		// speed calc at 100 Hz
 #define ENC_MODE		4.0			// 4x Quadrature mode
 #define ENC_COUNT_REV	700.0		// encoder counts per revolution
 
 // Motor params
-#define MOTOR_1			OCR0B
-#define MOTOR_2			OCR0A
-#define MOTOR_MIN_PWM	15
+#define MOTOR_PWM1			OCR0B
+#define MOTOR_PWM2			OCR0A
 
 // Motor PID param
 #define PID_RATE		ENC_RATE	// run at encoder rate

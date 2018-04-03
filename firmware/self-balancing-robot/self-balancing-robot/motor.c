@@ -24,6 +24,7 @@ volatile long enc1_total = 0;
 volatile long enc2_total = 0;
 volatile float speed1 = 0;
 volatile float speed2 = 0;
+volatile float speed_flag = 0;
 
 // convert encoders to RPM
 #define ENC_CONST	1.0 / (ENC_MODE * ENC_COUNT_REV) * 60.0
@@ -59,8 +60,8 @@ void init_encoders(void)
 void setup_pwm(void)
 {
 	// set up timer0
-	MOTOR_1 = 0;
-	MOTOR_2 = 0;
+	MOTOR_PWM1 = 0;
+	MOTOR_PWM2 = 0;
 	TCCR0A |= _BV(WGM00);						// Phase Correct PWM
 	TCCR0A |= _BV(COM0A1) | _BV(COM0B1);		// non-inverting (on clear)
 	TCCR0B |= _BV(CS00);						// start timer0 (28.9 kHz) PS=1
@@ -77,54 +78,50 @@ void setup_pwm(void)
 
 void motor_set_speed(int8_t motor1, int8_t motor2)
 {
-	if(motor1 != 0)
-	{
-		MOTOR_1 = map(abs(motor1), 0, 100, MOTOR_MIN_PWM, 255);
-	}
-	else
-	{
-		MOTOR_1 = 0;
-	}
-	if(motor2 != 0)
-	{
-		MOTOR_2 = map(abs(motor2), 0, 100, MOTOR_MIN_PWM, 255);
-	}
-	else
-	{
-		MOTOR_2 = 0;
-	}
-	
 	if(motor1 < 0)
 	{
 		PORT(MOTOR_DIR1_PORT) |= _BV(MOTOR_DIR1_PIN);
+		MOTOR_PWM1 = -1 * motor1;
 	}
 	else
 	{
 		PORT(MOTOR_DIR1_PORT) &= ~(_BV(MOTOR_DIR1_PIN));
+		MOTOR_PWM1 = motor1;
 	}
 	if(motor2 < 0)
 	{
 		PORT(MOTOR_DIR2_PORT) |= _BV(MOTOR_DIR2_PIN);
+		MOTOR_PWM2 = -1 * motor2;
 	}
 	else
 	{
 		PORT(MOTOR_DIR2_PORT) &= ~(_BV(MOTOR_DIR2_PIN));
+		MOTOR_PWM2 = motor2;
 	}
 }
 
-void motor_get_speed(int16_t* motor1, int16_t* motor2)
+char motor_get_speed(float* motor1, float* motor2)
 {
-	ATOMIC_BLOCK(ATOMIC_FORCEON)
+	if(speed_flag)
 	{
-		*motor1 = speed1;
-		*motor2 = speed2;
+		ATOMIC_BLOCK(ATOMIC_FORCEON)
+		{
+			*motor1 = speed1;
+			*motor2 = speed2;
+			speed_flag = 0;
+			return 1;
+		}
 	}
+	return 0;
 }
 
 void motor_get_encoder(long* enc1, long* enc2)
 {
-	*enc1 = enc1_total;
-	*enc2 = enc2_total;
+	ATOMIC_BLOCK(ATOMIC_FORCEON)
+	{
+		*enc1 = enc1_total;
+		*enc2 = enc2_total;
+	}
 }
 
 /*
@@ -163,5 +160,6 @@ void motor_calculate_speed(int freq)
 		enc1_total += enc1;
 		enc2_total += enc2;
 		enc1 = enc2 = 0;
+		speed_flag = 1;
 	}
 }

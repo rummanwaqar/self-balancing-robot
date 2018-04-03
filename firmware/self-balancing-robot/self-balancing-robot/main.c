@@ -38,11 +38,11 @@ int main(void)
 	
 	motor_set_speed(0,0);
 
-	//int speed1, speed2;
-	//long enc1, enc2;
+	float speed1, speed2;
+	long enc1, enc2;
 	
 	//init mpu6050
-	mpu6050_init();
+	//mpu6050_init();
 	_delay_ms(50);
 
 	
@@ -74,25 +74,14 @@ int main(void)
 			dtostrf(rpy.y, 3, 2, temp); printf(",%s", temp);
 			dtostrf(rpy.z, 3, 2, temp); printf(",%s\n", temp);
 		} 
-
-		//motor_get_speed(&speed1, &speed2);
-		//motor_get_encoder(&enc1, &enc2);
-		//if(pid_flag)
-		//{
-			//dtostrf(pitch, 3, 2, temp);
-			//printf("%s", temp);
-			//dtostrf(roll, 3, 2, temp);
-			//printf("\t%s", temp);
-			//dtostrf(yaw, 3, 2, temp);
-			//printf("\t%s\n", temp);
-			//printf("%d %d %d\n", ax, ay, az);
-			//pid_flag = 0;
-			//
-		//}
-		//printf("%d %d %ld %ld\n", (int)speed1, (int)speed2, enc1, enc2);
 		
-		//PORT(LED_PORT) ^= _BV(LED_RED);
-		//_delay_ms(200);
+		if(motor_get_speed(&speed1, &speed2))
+		{
+			motor_get_encoder(&enc1, &enc2);
+			dtostrf(speed1, 3, 2, temp); printf("%s", temp);
+			dtostrf(speed2, 3, 2, temp); printf(",%s", temp);
+			printf(",%ld,%ld\n", enc1, enc2);
+		}
 	}
 }
 
@@ -102,21 +91,14 @@ int main(void)
 ISR(TIMER2_COMPA_vect)
 {
 	static uint8_t count = 0;
-	static uint8_t pidCount = 0;
 	
 	count++;
-	pidCount++;
 	
 	if(count == 1000/(int)ENC_RATE)
 	{
 		motor_calculate_speed(ENC_RATE);
 		count = 0;
-	}
-	
-	if(pidCount == 1000/(int)PID_RATE)
-	{
-		pid_flag = 1;
-		pidCount = 0;
+		PORT(LED_PORT) ^= _BV(LED_RED);
 	}
 	
 }

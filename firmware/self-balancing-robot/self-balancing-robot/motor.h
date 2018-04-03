@@ -20,11 +20,12 @@ void motor_calculate_speed(int freq);
  * get motor speed
  * param motor1: memory space to store motor1 value
  * param motor2: memory space to store motor2 value
+ * returns 1 if speed available, 0 otherwise
  */
-void motor_get_speed(int16_t* motor1, int16_t* motor2);
+char motor_get_speed(float* motor1, float* motor2);
 
 /*
- * set motor speed (0-100%) using pwm
+ * set motor speed (0-255) using pwm
  */
 void motor_set_speed(int8_t motor1, int8_t motor2);
 
