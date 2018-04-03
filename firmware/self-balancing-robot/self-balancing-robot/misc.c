@@ -8,6 +8,7 @@
 
 #include <avr/io.h>
 #include <avr/sfr_defs.h>
+#include <math.h>
 
 #include "defines.h"
 #include "misc.h"
@@ -31,4 +32,27 @@ void gpio_init(void)
 	// initialize LEDs as OFF
 	PORT(LED_PORT) |= ( _BV(LED_RED) | _BV(LED_GREEN) | _BV(LED_BLUE) );
 	DDR(LED_PORT) |= ( _BV(LED_RED) | _BV(LED_GREEN) | _BV(LED_BLUE) );
+}
+
+Vector3 toEulerAngle(const float q0, const float q1, const float q2, const float q3)
+{
+	Vector3 rpy;
+	// roll (x-axis rotation)
+	double sinr = +2.0 * (q0 * q1 + q2 * q3);
+	double cosr = +1.0 - 2.0 * (q1 * q1 + q2 * q2);
+	rpy.x = atan2(sinr, cosr);
+
+	// pitch (y-axis rotation)
+	double sinp = +2.0 * (q0 * q2 - q3 * q1);
+	if (fabs(sinp) >= 1)
+	rpy.y = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+	else
+	rpy.y = asin(sinp);
+
+	// yaw (z-axis rotation)
+	double siny = +2.0 * (q0 * q3 + q1 * q2);
+	double cosy = +1.0 - 2.0 * (q2 * q2 + q3 * q3);
+	rpy.z = atan2(siny, cosy);
+	
+	return rpy;
 }

@@ -19,6 +19,7 @@
 #include "mpu6050.h"
 #include "motor.h"
 #include "misc.h"
+#include "MadgwickAHRS.h"
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_RW);
 
@@ -51,12 +52,27 @@ int main(void)
 	{
 		if((imu_data = mpu6050_getData()) != 0)
 		{
+			// convert to quaternion
+			MadgwickAHRSupdateIMU(imu_data->gyro.x, imu_data->gyro.y, imu_data->gyro.z,
+									imu_data->accel.x, imu_data->accel.y, imu_data->accel.z);
+			Vector3 rpy = toEulerAngle(q0, q1, q2, q3);
+			
 			dtostrf(imu_data->accel.x, 3, 2, temp); printf("%s", temp);
 			dtostrf(imu_data->accel.y, 3, 2, temp); printf(",%s", temp);
 			dtostrf(imu_data->accel.z, 3, 2, temp); printf(",%s", temp);
 			dtostrf(imu_data->gyro.x, 3, 2, temp); printf(",%s", temp);
 			dtostrf(imu_data->gyro.y, 3, 2, temp); printf(",%s", temp);
-			dtostrf(imu_data->gyro.z, 3, 2, temp); printf(",%s\n", temp);
+			dtostrf(imu_data->gyro.z, 3, 2, temp); printf(",%s", temp);
+			// quaternions
+			dtostrf(q0, 3, 2, temp); printf(",%s", temp);
+			dtostrf(q1, 3, 2, temp); printf(",%s", temp);
+			dtostrf(q2, 3, 2, temp); printf(",%s", temp);
+			dtostrf(q3, 3, 2, temp); printf(",%s", temp);
+			
+			// rpy
+			dtostrf(rpy.x, 3, 2, temp); printf(",%s", temp);
+			dtostrf(rpy.y, 3, 2, temp); printf(",%s", temp);
+			dtostrf(rpy.z, 3, 2, temp); printf(",%s\n", temp);
 		} 
 
 		//motor_get_speed(&speed1, &speed2);
