@@ -18,10 +18,13 @@
 #include "uart.h"
 #include "mpu6050.h"
 #include "motor.h"
+#include "misc.h"
+#include "MadgwickAHRS.h"
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_RW);
 
-uint8_t pid_flag = 0;
+volatile uint8_t pid_flag = 0;
+volatile uint8_t imu_flag = 0;
 
 int main(void)
 {
@@ -35,49 +38,61 @@ int main(void)
 	
 	motor_set_speed(0,0);
 
-	int speed1, speed2;
-	long enc1, enc2;
+	//int speed1, speed2;
+	//long enc1, enc2;
 	
 	//init mpu6050
 	mpu6050_init();
 	_delay_ms(50);
-	
-	//mpu6050_dmpInitialize();
-	//mpu6050_dmpEnable();
-	_delay_ms(10);
-	
-	int ax, ay, az, gx, gy, gz;
-	double axg, ayg, azg, gxds, gyds, gzds;
-	double qw = 1.0f;
-	double qx = 0.0f;
-	double qy = 0.0f;
-	double qz = 0.0f;
-	double roll = 0.0f;
-	double pitch = 0.0f;
-	double yaw = 0.0f;
+
 	
 	char temp[10];
-	
+	Imu* imu_data;
 	while (1)
 	{
-		//if(mpu6050_getQuaternionWait(&qw, &qx, &qy, &qz)) {
-		//mpu6050_getRollPitchYaw(qw, qx, qy, qz, &roll, &pitch, &yaw);
-		//}
-		
-		// for MAHONY filter
-		//mpu6050_getQuaternion(&qw, &qx, &qy, &qz);
-		//mpu6050_getRollPitchYaw(&roll, &pitch, &yaw);
-		// for no filter
-		mpu6050_getRawData(&ax, &ay, &az, &gx, &gy, &gz);
-		//mpu6050_getConvData(&axg, &ayg, &azg, &gxds, &gyds, &gzds);
+		if((imu_data = mpu6050_getData()) != 0)
+		{
+			// convert to quaternion
+			MadgwickAHRSupdateIMU(imu_data->gyro.x, imu_data->gyro.y, imu_data->gyro.z,
+									imu_data->accel.x, imu_data->accel.y, imu_data->accel.z);
+			Vector3 rpy = toEulerAngle(q0, q1, q2, q3);
+			
+			dtostrf(imu_data->accel.x, 3, 2, temp); printf("%s", temp);
+			dtostrf(imu_data->accel.y, 3, 2, temp); printf(",%s", temp);
+			dtostrf(imu_data->accel.z, 3, 2, temp); printf(",%s", temp);
+			dtostrf(imu_data->gyro.x, 3, 2, temp); printf(",%s", temp);
+			dtostrf(imu_data->gyro.y, 3, 2, temp); printf(",%s", temp);
+			dtostrf(imu_data->gyro.z, 3, 2, temp); printf(",%s", temp);
+			// quaternions
+			dtostrf(q0, 3, 2, temp); printf(",%s", temp);
+			dtostrf(q1, 3, 2, temp); printf(",%s", temp);
+			dtostrf(q2, 3, 2, temp); printf(",%s", temp);
+			dtostrf(q3, 3, 2, temp); printf(",%s", temp);
+			
+			// rpy
+			dtostrf(rpy.x, 3, 2, temp); printf(",%s", temp);
+			dtostrf(rpy.y, 3, 2, temp); printf(",%s", temp);
+			dtostrf(rpy.z, 3, 2, temp); printf(",%s\n", temp);
+		} 
 
-		motor_get_speed(&speed1, &speed2);
-		motor_get_encoder(&enc1, &enc2);
+		//motor_get_speed(&speed1, &speed2);
+		//motor_get_encoder(&enc1, &enc2);
+		//if(pid_flag)
+		//{
+			//dtostrf(pitch, 3, 2, temp);
+			//printf("%s", temp);
+			//dtostrf(roll, 3, 2, temp);
+			//printf("\t%s", temp);
+			//dtostrf(yaw, 3, 2, temp);
+			//printf("\t%s\n", temp);
+			//printf("%d %d %d\n", ax, ay, az);
+			//pid_flag = 0;
+			//
+		//}
+		//printf("%d %d %ld %ld\n", (int)speed1, (int)speed2, enc1, enc2);
 		
-		printf("%d %d %ld %ld\n", (int)speed1, (int)speed2, enc1, enc2);
-		
-		PORT(LED_PORT) ^= _BV(LED_RED);
-		_delay_ms(200);
+		//PORT(LED_PORT) ^= _BV(LED_RED);
+		//_delay_ms(200);
 	}
 }
 
@@ -103,4 +118,5 @@ ISR(TIMER2_COMPA_vect)
 		pid_flag = 1;
 		pidCount = 0;
 	}
+	
 }

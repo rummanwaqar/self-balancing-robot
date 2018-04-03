@@ -157,6 +157,12 @@
     <Compile Include="i2cmaster.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="MadgwickAHRS.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MadgwickAHRS.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
@@ -167,9 +173,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="mpu6050.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="mpu6050dmp6.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="mpu6050registers.h">
