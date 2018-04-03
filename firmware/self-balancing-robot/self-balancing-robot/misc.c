@@ -36,9 +36,9 @@ void gpio_init(void)
 	DDR(LED_PORT) |= ( _BV(LED_RED) | _BV(LED_GREEN) | _BV(LED_BLUE) );
 }
 
-Vector3 toEulerAngle(const float q0, const float q1, const float q2, const float q3)
+Vector3_t toEulerAngle(const float q0, const float q1, const float q2, const float q3)
 {
-	Vector3 rpy;
+	Vector3_t rpy;
 	// roll (x-axis rotation)
 	double sinr = +2.0 * (q0 * q1 + q2 * q3);
 	double cosr = +1.0 - 2.0 * (q1 * q1 + q2 * q2);
@@ -59,7 +59,7 @@ Vector3 toEulerAngle(const float q0, const float q1, const float q2, const float
 	return rpy;
 }
 
-Command parseCommand(char* input_string, int* value)
+Command_t parseCommand(char* input_string, int* value)
 {
 	char command[7];
 	int temp_val;
@@ -82,6 +82,21 @@ Command parseCommand(char* input_string, int* value)
 					*value = temp_val;
 					return CMD_M2;
 				}
+			}
+			else if (strcmp(command, "m_p") == 0)
+			{
+				*value = temp_val;
+				return CMD_M_P;
+			}
+			else if (strcmp(command, "m_i") == 0)
+			{
+				*value = temp_val;
+				return CMD_M_I;
+			}
+			else if (strcmp(command, "m_d") == 0)
+			{
+				*value = temp_val;
+				return CMD_M_D;
 			}
 		}
 	}

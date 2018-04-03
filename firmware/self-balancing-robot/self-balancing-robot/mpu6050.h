@@ -44,9 +44,9 @@
 extern void mpu6050_init();
 extern uint8_t mpu6050_testConnection();
 
-void mpu6050_getRawData(volatile Imu* imu);
+void mpu6050_getRawData(volatile Imu_t* imu);
 
-Imu* mpu6050_getData(void);
+Imu_t* mpu6050_getData(void);
 
 extern void mpu6050_setSleepDisabled();
 extern void mpu6050_setSleepEnabled();

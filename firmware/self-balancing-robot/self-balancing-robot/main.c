@@ -20,6 +20,7 @@
 #include "motor.h"
 #include "misc.h"
 #include "MadgwickAHRS.h"
+#include "pid.h"
 
 FILE uart_stream = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_RW);
 
@@ -32,7 +33,7 @@ int main(void)
 	gpio_init();
 	uart_init();
 	motor_init();
-	//tick_timer();
+	tick_timer();
 	
 	sei();
 	
@@ -42,11 +43,14 @@ int main(void)
 
 	
 	char temp[10];
-	Imu* imu_data;
+	Imu_t* imu_data;
 	float speed1, speed2;
 	long enc1, enc2;
 	char *input_string;
 	int set_point1 = 0, set_point2 = 0;
+	float m_p=2.0, m_i=0.5, m_d=2.0;
+	PidData_t m1_pid;
+	pid_init(m_p, m_i, m_d, PID_I_WINDUP, &m1_pid);
 	while (1)
 	{
 		if((imu_data = mpu6050_getData()) != 0)
@@ -54,7 +58,7 @@ int main(void)
 			// convert to quaternion
 			MadgwickAHRSupdateIMU(imu_data->gyro.x, imu_data->gyro.y, imu_data->gyro.z,
 									imu_data->accel.x, imu_data->accel.y, imu_data->accel.z);
-			Vector3 rpy = toEulerAngle(q0, q1, q2, q3);
+			Vector3_t rpy = toEulerAngle(q0, q1, q2, q3);
 			
 			dtostrf(imu_data->accel.x, 3, 2, temp); printf("%s", temp);
 			dtostrf(imu_data->accel.y, 3, 2, temp); printf(",%s", temp);
@@ -76,17 +80,23 @@ int main(void)
 		
 		if(motor_get_speed(&speed1, &speed2))
 		{
+			int inputValue = (int)pid_controller(set_point1, speed2, &m1_pid);
+			if(inputValue > MOTOR_MAX_EFFORT) inputValue = MOTOR_MAX_EFFORT - 1;
+			if(inputValue < -1 * MOTOR_MAX_EFFORT) inputValue = -1 * MOTOR_MAX_EFFORT;
 			motor_get_encoder(&enc1, &enc2);
-			dtostrf(speed1, 3, 2, temp); printf("%s", temp);
-			dtostrf(speed2, 3, 2, temp); printf(",%s", temp);
-			printf(",%ld,%ld\n", enc1, enc2);
+			dtostrf(speed2, 3, 2, temp); printf("%s", temp);
+			dtostrf(set_point1, 3, 2, temp); printf(",%s", temp);
+			dtostrf(inputValue, 3, 2, temp); printf(",%s\n", temp);
+			motor_set_speed(0, inputValue);
+			//motor_set_speed(0, 100);
+			//dtostrf(speed2, 3, 2, temp); printf(",%s", temp);
 		}
 		
 		// read commands
 		if(uart_input_available())
 		{
 			int value;
-			Command cmd;
+			Command_t cmd;
 			input_string = uart_get_string();
 			cmd=parseCommand(input_string, &value);
 			switch (cmd)
@@ -98,13 +108,26 @@ int main(void)
 				case CMD_M2:
 					printf("=Motor2:%d\n", value);
 					set_point2 = value;
-					break;	
+					break;
+				case CMD_M_P:
+					printf("=Motor P(x100):%d\n", value);
+					m_p = (float)value/100.0;
+					pid_init(m_p, m_i, m_d, PID_I_WINDUP, &m1_pid);
+					break;
+				case CMD_M_I:
+					printf("=Motor I(x100):%d\n", value);
+					m_i = (float)value/100.0;
+					pid_init(m_p, m_i, m_d, PID_I_WINDUP, &m1_pid);
+					break;
+				case CMD_M_D:
+					printf("=Motor I(x100):%d\n", value);
+					m_i = (float)value/100.0;
+					pid_init(m_p, m_i, m_d, PID_I_WINDUP, &m1_pid);
+					break;
 				default:
 					break;				
 			}
-		}
-		motor_set_speed(set_point1, set_point2);
-		
+		}		
 	} // end of while loop
 }
 

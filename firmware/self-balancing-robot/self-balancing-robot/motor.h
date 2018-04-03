@@ -27,7 +27,7 @@ char motor_get_speed(float* motor1, float* motor2);
 /*
  * set motor speed (0-255) using pwm
  */
-void motor_set_speed(int8_t motor1, int8_t motor2);
+void motor_set_speed(int motor1, int motor2);
 
 /*
  * get encoder count

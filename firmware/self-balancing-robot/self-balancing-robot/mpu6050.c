@@ -14,7 +14,7 @@
 #include "mpu6050.h"
 
 // contains imu data read
-volatile static Imu imu_data;
+volatile static Imu_t imu_data;
 volatile static char imu_flag;
 
 /*
@@ -201,7 +201,7 @@ void mpu6050_init() {
 /*
  * get raw data
  */
-void mpu6050_getRawData(volatile Imu* imu) {
+void mpu6050_getRawData(volatile Imu_t* imu) {
 	uint8_t buffer[14];
 	float accel_raw_x, accel_raw_y, accel_raw_z, gyro_raw_x, gyro_raw_y, gyro_raw_z;
 	static uint32_t samples = 0;
@@ -260,14 +260,14 @@ void mpu6050_getRawData(volatile Imu* imu) {
 	imu->gyro.z = (float)(gyro_raw_z) / DEG2RAD(MPU6050_GGAIN);
 }
 
-Imu* mpu6050_getData(void)
+Imu_t* mpu6050_getData(void)
 {
 	if(imu_flag == 1)
 	{
 		ATOMIC_BLOCK(ATOMIC_FORCEON)
 		{
 			imu_flag = 0;
-			return (Imu*)&imu_data;
+			return (Imu_t*)&imu_data;
 		}
 	}
 	return 0;

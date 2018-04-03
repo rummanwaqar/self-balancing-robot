@@ -76,27 +76,27 @@ void setup_pwm(void)
 	
 }
 
-void motor_set_speed(int8_t motor1, int8_t motor2)
+void motor_set_speed(int motor1, int motor2)
 {
-	if(motor1 < 0)
+	if(motor1 > 0)
 	{
 		PORT(MOTOR_DIR1_PORT) |= _BV(MOTOR_DIR1_PIN);
-		MOTOR_PWM1 = -1 * motor1;
+		MOTOR_PWM1 = abs(motor1);
 	}
 	else
 	{
 		PORT(MOTOR_DIR1_PORT) &= ~(_BV(MOTOR_DIR1_PIN));
-		MOTOR_PWM1 = motor1;
+		MOTOR_PWM1 = abs(motor1);
 	}
 	if(motor2 < 0)
 	{
 		PORT(MOTOR_DIR2_PORT) |= _BV(MOTOR_DIR2_PIN);
-		MOTOR_PWM2 = -1 * motor2;
+		MOTOR_PWM2 = abs(motor2);
 	}
 	else
 	{
 		PORT(MOTOR_DIR2_PORT) &= ~(_BV(MOTOR_DIR2_PIN));
-		MOTOR_PWM2 = motor2;
+		MOTOR_PWM2 = abs(motor2);
 	}
 }
 
@@ -155,8 +155,8 @@ void motor_calculate_speed(int freq)
 {
 	ATOMIC_BLOCK(ATOMIC_FORCEON)
 	{
-		speed1 = (float)enc1 * freq * ENC_CONST;
-		speed2 = (float)enc2 * freq * ENC_CONST;
+		speed1 = (speed1 * ENC_FILTER_COF) + ((float)enc1 * freq * ENC_CONST * (1-ENC_FILTER_COF));
+		speed2 = (speed2 * ENC_FILTER_COF) + ((float)enc2 * freq * ENC_CONST * (1-ENC_FILTER_COF));
 		enc1_total += enc1;
 		enc2_total += enc2;
 		enc1 = enc2 = 0;

@@ -2,7 +2,7 @@
  * defines.h
  *
  * Created: 2018-03-29 7:45:51 PM
- *  Author: rumma
+ *  Author: rumman
  */ 
 
 
@@ -46,14 +46,16 @@
 #define ENC_RATE		100.0		// speed calc at 100 Hz
 #define ENC_MODE		4.0			// 4x Quadrature mode
 #define ENC_COUNT_REV	700.0		// encoder counts per revolution
+#define ENC_FILTER_COF	0.7			// first order IIR filter coeffiecient for motor velocity reading
 
 // Motor params
 #define MOTOR_PWM1			OCR0B
 #define MOTOR_PWM2			OCR0A
-#define MOTOR_MAX_RPM		130			
+#define MOTOR_MAX_RPM		130		
+#define MOTOR_MAX_EFFORT	255
 
 // Motor PID param
-#define PID_RATE		ENC_RATE	// run at encoder rate
+#define PID_I_WINDUP		500
 
 // MPU6050 settings
 #define MPU6050_ADDR		(0x68 <<1)				// device address - 0x68 pin low (GND), 0x69 pin high (VCC)
@@ -92,16 +94,16 @@ typedef struct
 	float x;
 	float y;
 	float z;
-} Vector3;
+} Vector3_t;
 
 // imu data
 typedef struct {
-	Vector3 accel;
-	Vector3 gyro;
-} Imu;
+	Vector3_t accel;
+	Vector3_t gyro;
+} Imu_t;
 
 typedef enum {
-	CMD_NULL, CMD_M1, CMD_M2
-} Command;
+	CMD_NULL, CMD_M1, CMD_M2, CMD_M_P, CMD_M_I, CMD_M_D
+} Command_t;
 
 #endif /* DEFINES_H_ */
