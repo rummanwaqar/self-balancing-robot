@@ -6,18 +6,16 @@
 
 #include "defines.h"
 
-#include <stdlib.h>
-#include <string.h>
 #include <avr/io.h>
-#include <avr/pgmspace.h>
 #include <avr/interrupt.h>
+#include <util/atomic.h>
 #include <util/delay.h>
-
+#include "i2cmaster.h"
 #include "mpu6050.h"
 
-#include "i2cmaster.h"
-
-volatile uint8_t buffer[14];
+// contains imu data read
+volatile static Imu imu_data;
+volatile static char imu_flag;
 
 /*
  * read bytes from chip register
@@ -158,6 +156,7 @@ void mpu6050_setSleepEnabled() {
  * test connection to chip
  */
 uint8_t mpu6050_testConnection() {
+	uint8_t buffer[2];
 	mpu6050_readBits(MPU6050_RA_WHO_AM_I, MPU6050_WHO_AM_I_BIT, MPU6050_WHO_AM_I_LENGTH, (uint8_t *)buffer);
 	if(buffer[0] == 0x34)
 		return 1;
@@ -169,11 +168,9 @@ uint8_t mpu6050_testConnection() {
  * initialize the accel and gyro
  */
 void mpu6050_init() {
-	#if MPU6050_I2CINIT == 1
 	//init i2c
 	i2c_init();
 	_delay_us(10);
-	#endif
 
 	//allow mpu6050 chip clocks to start up
 	_delay_ms(100);
@@ -183,65 +180,103 @@ void mpu6050_init() {
 	//wake up delay needed sleep disabled
 	_delay_ms(10);
 
-	//set clock source
-	//  it is highly recommended that the device be configured to use one of the gyroscopes (or an external clock source)
-	//  as the clock reference for improved stability
+	//set clock source (recommended for stability)
 	mpu6050_writeBits(MPU6050_RA_PWR_MGMT_1, MPU6050_PWR1_CLKSEL_BIT, MPU6050_PWR1_CLKSEL_LENGTH, MPU6050_CLOCK_PLL_XGYRO);
-	//set DLPF bandwidth to 42Hz
-	mpu6050_writeBits(MPU6050_RA_CONFIG, MPU6050_CFG_DLPF_CFG_BIT, MPU6050_CFG_DLPF_CFG_LENGTH, MPU6050_DLPF_BW_42);
-    //set sampe rate
-	mpu6050_writeByte(MPU6050_RA_SMPLRT_DIV, 4); //1khz / (1 + 4) = 200Hz
+	//set digital low pass filter bandwidth to 98Hz 
+	mpu6050_writeBits(MPU6050_RA_CONFIG, MPU6050_CFG_DLPF_CFG_BIT, MPU6050_CFG_DLPF_CFG_LENGTH, MPU6050_DLPF_BW_98);
+    //set sample rate 50Hz = gyro_rate (1Khz) / (1 + DIV) = 1000 / (1 + 19) => DIV = 19
+	mpu6050_writeByte(MPU6050_RA_SMPLRT_DIV, 19);
 	//set gyro range
 	mpu6050_writeBits(MPU6050_RA_GYRO_CONFIG, MPU6050_GCONFIG_FS_SEL_BIT, MPU6050_GCONFIG_FS_SEL_LENGTH, MPU6050_GYRO_FS);
 	//set accel range
 	mpu6050_writeBits(MPU6050_RA_ACCEL_CONFIG, MPU6050_ACONFIG_AFS_SEL_BIT, MPU6050_ACONFIG_AFS_SEL_LENGTH, MPU6050_ACCEL_FS);
-
-	#if MPU6050_GETATTITUDE == 1
-	MPU6050_TIMER0INIT
-	#endif
+	// enable INTA interrupt
+	mpu6050_writeBits(MPU6050_RA_INT_ENABLE, MPU6050_INTERRUPT_DATA_RDY_BIT, 1, 1 );
+	
+	// enable external interrupt (INT0) 
+	EICRA |= _BV(ISC01) | _BV(ISC00);	// interrupt on rising edge
+	EIMSK |= _BV(INT0);					// enable int
 }
 
-//can not accept many request if we alreay have getattitude requests
 /*
  * get raw data
  */
-void mpu6050_getRawData(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz) {
+void mpu6050_getRawData(volatile Imu* imu) {
+	uint8_t buffer[14];
+	float accel_raw_x, accel_raw_y, accel_raw_z, gyro_raw_x, gyro_raw_y, gyro_raw_z;
+	static uint32_t samples = 0;
+	static float gyro_offset_x, gyro_offset_y, gyro_offset_z;
+	
 	mpu6050_readBytes(MPU6050_RA_ACCEL_XOUT_H, 14, (uint8_t *)buffer);
 
-    *ax = (((int16_t)buffer[0]) << 8) | buffer[1];
-    *ay = (((int16_t)buffer[2]) << 8) | buffer[3];
-    *az = (((int16_t)buffer[4]) << 8) | buffer[5];
-    *gx = (((int16_t)buffer[8]) << 8) | buffer[9];
-    *gy = (((int16_t)buffer[10]) << 8) | buffer[11];
-    *gz = (((int16_t)buffer[12]) << 8) | buffer[13];
-}
-
-/*
- * get raw data converted to g and deg/sec values
- */
-void mpu6050_getConvData(double* axg, double* ayg, double* azg, double* gxds, double* gyds, double* gzds) {
-	int16_t ax = 0;
-	int16_t ay = 0;
-	int16_t az = 0;
-	int16_t gx = 0;
-	int16_t gy = 0;
-	int16_t gz = 0;
-	mpu6050_getRawData(&ax, &ay, &az, &gx, &gy, &gz);
-
-	#if MPU6050_CALIBRATEDACCGYRO == 1
-    *axg = (double)(ax-MPU6050_AXOFFSET)/MPU6050_AGAIN;
-    *ayg = (double)(ay-MPU6050_AYOFFSET)/MPU6050_AGAIN;
-    *azg = (double)(az-MPU6050_AZOFFSET)/MPU6050_AGAIN;
-    *gxds = (double)(gx-MPU6050_GXOFFSET)/MPU6050_GGAIN;
-	*gyds = (double)(gy-MPU6050_GYOFFSET)/MPU6050_GGAIN;
-	*gzds = (double)(gz-MPU6050_GZOFFSET)/MPU6050_GGAIN;
-	#else
-    *axg = (double)(ax)/MPU6050_AGAIN;
-    *ayg = (double)(ay)/MPU6050_AGAIN;
-    *azg = (double)(az)/MPU6050_AGAIN;
-    *gxds = (double)(gx)/MPU6050_GGAIN;
-	*gyds = (double)(gy)/MPU6050_GGAIN;
-	*gzds = (double)(gz)/MPU6050_GGAIN;
+    accel_raw_x = (((int16_t)buffer[0]) << 8) | buffer[1];
+    accel_raw_y = (((int16_t)buffer[2]) << 8) | buffer[3];
+    accel_raw_z = (((int16_t)buffer[4]) << 8) | buffer[5];
+    gyro_raw_x = (((int16_t)buffer[8]) << 8) | buffer[9];
+    gyro_raw_y = (((int16_t)buffer[10]) << 8) | buffer[11];
+    gyro_raw_z = (((int16_t)buffer[12]) << 8) | buffer[13];
+	
+	// calculate the offsets at power up
+	if(samples < 64) {
+		samples++;
+		return;
+	} else if(samples < 128) {
+		gyro_offset_x += gyro_raw_x;
+		gyro_offset_y += gyro_raw_y;
+		gyro_offset_z += gyro_raw_z;
+		samples++;
+		return;
+	} else if(samples == 128) {
+		gyro_offset_x /= 64.0f;
+		gyro_offset_y /= 64.0f;
+		gyro_offset_z /= 64.0f;
+		samples++;
+	} else {
+		gyro_raw_x -= gyro_offset_x;
+		gyro_raw_y -= gyro_offset_y;
+		gyro_raw_z -= gyro_offset_z;
+	}
+	
+	// accel offsets
+	#ifdef MPU6050_AXOFFSET
+		accel_raw_x -= MPU6050_AXOFFSET;
 	#endif
+	#ifdef MPU6050_AYOFFSET
+		accel_raw_y -= MPU6050_AYOFFSET;
+	#endif
+	#ifdef MPU6050_AZOFFSET
+		accel_raw_z -= MPU6050_AZOFFSET;
+	#endif
+	
+
+	// convert accelerometer readings into G's
+	imu->accel.x = (float)(accel_raw_x) / MPU6050_AGAIN;
+	imu->accel.y = (float)(accel_raw_y) / MPU6050_AGAIN;
+	imu->accel.z = (float)(accel_raw_z) / MPU6050_AGAIN;
+	
+	// convert gyro readings into Radians per second
+	imu->gyro.x = (float)(gyro_raw_x) / DEG2RAD(MPU6050_GGAIN);
+	imu->gyro.y = (float)(gyro_raw_y) / DEG2RAD(MPU6050_GGAIN);
+	imu->gyro.z = (float)(gyro_raw_z) / DEG2RAD(MPU6050_GGAIN);
 }
 
+Imu* mpu6050_getData(void)
+{
+	if(imu_flag == 1)
+	{
+		ATOMIC_BLOCK(ATOMIC_FORCEON)
+		{
+			imu_flag = 0;
+			return (Imu*)&imu_data;
+		}
+	}
+	return 0;
+	
+}
+
+ISR(INT0_vect)
+{
+	mpu6050_getRawData(&imu_data);
+	imu_flag = 1;
+	PORT(LED_PORT) ^= _BV(LED_GREEN);
+}

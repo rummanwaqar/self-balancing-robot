@@ -1,17 +1,8 @@
 /*
-MPU6050 lib 0x02
-
-copyright (c) Davide Gironi, 2012
-
-Released under GPLv3.
-Please refer to LICENSE file for licensing information.
-
-References:
-  - most of the code is a port of the arduino mpu6050 library by Jeff Rowberg
-    https://github.com/jrowberg/i2cdevlib
-  - Mahony complementary filter for attitude estimation
-    http://www.x-io.co.uk
-*/
+ * MPU6050
+ * Author: Rumman Waqar
+ * Based on library from Davide Gironi, 2012
+ */
 
 
 #ifndef MPU6050_H_
@@ -22,14 +13,14 @@ References:
 #include "defines.h"
 
 // sensitivity data
-#define MPU6050_GYRO_LSB_250 131.0
-#define MPU6050_GYRO_LSB_500 65.5
-#define MPU6050_GYRO_LSB_1000 32.8
-#define MPU6050_GYRO_LSB_2000 16.4
-#define MPU6050_ACCEL_LSB_2 16384.0
-#define MPU6050_ACCEL_LSB_4 8192.0
-#define MPU6050_ACCEL_LSB_8 4096.0
-#define MPU6050_ACCEL_LSB_16 2048.0
+#define MPU6050_GYRO_LSB_250 131.0f
+#define MPU6050_GYRO_LSB_500 65.5f
+#define MPU6050_GYRO_LSB_1000 32.8f
+#define MPU6050_GYRO_LSB_2000 16.4f
+#define MPU6050_ACCEL_LSB_2 16384.0f
+#define MPU6050_ACCEL_LSB_4 8192.0f
+#define MPU6050_ACCEL_LSB_8 4096.0f
+#define MPU6050_ACCEL_LSB_16 2048.0f
 #if MPU6050_GYRO_FS == MPU6050_GYRO_FS_250
 #define MPU6050_GGAIN MPU6050_GYRO_LSB_250
 #elif MPU6050_GYRO_FS == MPU6050_GYRO_FS_500
@@ -53,8 +44,9 @@ References:
 extern void mpu6050_init();
 extern uint8_t mpu6050_testConnection();
 
-extern void mpu6050_getRawData(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz);
-extern void mpu6050_getConvData(double* axg, double* ayg, double* azg, double* gxds, double* gyds, double* gzds);
+void mpu6050_getRawData(volatile Imu* imu);
+
+Imu* mpu6050_getData(void);
 
 extern void mpu6050_setSleepDisabled();
 extern void mpu6050_setSleepEnabled();

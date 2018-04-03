@@ -55,26 +55,19 @@
 // Motor PID param
 #define PID_RATE		ENC_RATE	// run at encoder rate
 
-/*
- * MPU-6050 Settings
- */
-#define IMU_RATE		250.0		// imu integrated at 250Hz ~ 4ms
-#define MPU6050_I2CINIT 1			// init i2c in MPU6050
+// MPU6050 settings
 #define MPU6050_ADDR (0x68 <<1)		// device address - 0x68 pin low (GND), 0x69 pin high (VCC)
-//gyro and acc scale
-#define MPU6050_GYRO_FS MPU6050_GYRO_FS_1000
-#define MPU6050_ACCEL_FS MPU6050_ACCEL_FS_4
+#define MPU6050_GYRO_FS MPU6050_GYRO_FS_2000	// gyro scale
+#define MPU6050_ACCEL_FS MPU6050_ACCEL_FS_4		// accel scale
 // Calibration
-#define MPU6050_CALIBRATEDACCGYRO 1	// set to 1 if is calibrated
-#if MPU6050_CALIBRATEDACCGYRO == 1
-#define MPU6050_AXOFFSET 335.73
-#define MPU6050_AYOFFSET -247.18
-#define MPU6050_AZOFFSET 51.08
-#define MPU6050_GXOFFSET -64.34
-#define MPU6050_GYOFFSET -14.52
-#define MPU6050_GZOFFSET 29.5
-#endif
+#define MPU6050_AXOFFSET 336
+#define MPU6050_AYOFFSET -247
+#define MPU6050_AZOFFSET 51
 
+// Conversions Math
+#define PI				3.14159f
+#define DEG2RAD(deg)	(deg * 180.0f / PI)
+#define RAD2DEG(rad)	(rad * PI / 180.0f)
 
 /*
  * Macros definitions
@@ -92,5 +85,17 @@
 /*
  * Custom data types
  */
+typedef struct  
+{
+	float x;
+	float y;
+	float z;
+} Vector3;
+
+// imu data
+typedef struct {
+	Vector3 accel;
+	Vector3 gyro;
+} Imu;
 
 #endif /* DEFINES_H_ */
