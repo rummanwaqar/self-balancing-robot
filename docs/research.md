@@ -21,3 +21,6 @@
 * [Encoders](https://tutorial.cytron.io/2012/01/17/quadrature-encoder/)
 * [Quadrature Encoders](http://www.helicron.net/avr/quadrature-decoders/)
 * [Implementation](https://cdn.sparkfun.com/datasheets/Robotics/How%20to%20use%20a%20quadrature%20encoder.pdf)
+
+## HC-08 BLE
+* [BLE Linux](https://www.jaredwolff.com/blog/get-started-with-bluetooth-low-energy/)
