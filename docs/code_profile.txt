@@ -1,0 +1,31 @@
+main_loop - every 2.5us
+	imu_loop - every 20ms takes 2ms (max 2.2ms)
+		Madgwick filter - 1.5ms
+		EulerAngles - 700us
+
+	motor_loop - every 10ms takes 168.0us
+		pid loop - 80us
+		pid loop - 80us
+
+	read_loop - everytime command sent from uart takes 1.1ms
+		parseCommand - 140us
+		switch
+			motor_set - 1ms
+				printf - 810us
+			pid gains - 1.64ms
+				printf - 1.60ms
+
+	write_loop - every 50ms takes time depending on output sent out
+		with everything - 7.8ms
+		with imu_raw - 3ms
+		with quat - 1.8ms
+		with rpy and speed - 2.3ms
+		with pid - 680us
+
+ISR Tick_timer(Timer2) - every 1ms takes max 75us
+	calculate_motor_speed - 72us
+
+ISR encoder(PCINT0/1) - everytime encoder count triggered takes max 3.6us
+
+ISR IMU(INT0) - every 20ms takes max 710us
+
