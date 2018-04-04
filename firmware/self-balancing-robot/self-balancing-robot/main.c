@@ -59,7 +59,7 @@ int main(void)
 			MadgwickAHRSupdateIMU(imu_data->gyro.x, imu_data->gyro.y, imu_data->gyro.z,
 									imu_data->accel.x, imu_data->accel.y, imu_data->accel.z);
 			rpy = toEulerAngle(q0, q1, q2, q3);	// Madgwick library has globals q0..q3 for quaternion pose
-			
+
 			if(fabs(rpy.y) < 0.0872665)
 			{
 				PORT(LED_PORT) &= ~(_BV(LED_GREEN));
@@ -78,6 +78,8 @@ int main(void)
 				PORT(LED_PORT) |= _BV(LED_BLUE);
 				PORT(LED_PORT) &= ~(_BV(LED_RED));
 			}
+			
+			motor1.set_point = motor2.set_point = rpy.y * 200;
 		} 
 		
 		if(motor_get_speed(&motor1.speed, &motor2.speed))
@@ -90,6 +92,7 @@ int main(void)
 			if(abs(motor1.effort) < MOTOR_MIN_EFFORT) motor1.effort = 0;
 			if(abs(motor2.effort) < MOTOR_MIN_EFFORT) motor2.effort = 0;
 			motor_set_speed(motor1.effort, motor2.effort);
+			
 		}
 		
 		// display uart
@@ -157,9 +160,9 @@ int main(void)
 					disp_flags.motor_enc = value;
 					break;
 				default:
-					break;		
+					break;	
 			}
-		}		
+		}
 	} // end of while loop
 }
 
@@ -172,7 +175,8 @@ ISR(TIMER2_COMPA_vect)
 	static uint8_t display_count = 0;
 	if(display_count == 1000/DISP_RATE)
 	{
-		disp_update_flag = 1;
+		disp_update_flag = 1;	
+		display_count = 0;
 	}
 	if(motor_count == 1000/(int)ENC_RATE)
 	{
