@@ -24,3 +24,4 @@
 
 ## HC-08 BLE
 * [BLE Linux](https://www.jaredwolff.com/blog/get-started-with-bluetooth-low-energy/)
+* [Java BLE](https://www.shortn0tes.com/2017/08/uart-bridge-from-hm-10-to-pc-with-java.html)
