@@ -59,5 +59,6 @@ extern int8_t mpu6050_readBits(uint8_t regAddr, uint8_t bitStart, uint8_t length
 extern int8_t mpu6050_readBit(uint8_t regAddr, uint8_t bitNum, uint8_t *data);
 extern void mpu6050_writeBits(uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data);
 extern void mpu6050_writeBit(uint8_t regAddr, uint8_t bitNum, uint8_t data);
+extern char imu_calibrated();
 
 #endif

@@ -79,7 +79,15 @@ int main(void)
 				PORT(LED_PORT) &= ~(_BV(LED_RED));
 			}
 			
-			motor1.set_point = motor2.set_point = rpy.y * 200;
+			if(fabs(rpy.y) > 0.5 && imu_calibrated())
+			{
+				//
+			}
+			else
+			{
+				motor1.set_point = 0;
+				motor2.set_point = 0;
+			}
 		} 
 		
 		if(motor_get_speed(&motor1.speed, &motor2.speed))

@@ -16,6 +16,7 @@
 // contains imu data read
 volatile static Imu_t imu_data;
 volatile static char imu_flag;
+volatile static char imu_is_calibrated = 0;
 
 /*
  * read bytes from chip register
@@ -230,6 +231,7 @@ void mpu6050_getRawData(volatile Imu_t* imu) {
 		gyro_offset_x /= 64.0f;
 		gyro_offset_y /= 64.0f;
 		gyro_offset_z /= 64.0f;
+		imu_is_calibrated = 1;
 		samples++;
 	} else {
 		gyro_raw_x -= gyro_offset_x;
@@ -258,6 +260,11 @@ void mpu6050_getRawData(volatile Imu_t* imu) {
 	imu->gyro.x = (float)(gyro_raw_x) / DEG2RAD(MPU6050_GGAIN);
 	imu->gyro.y = (float)(gyro_raw_y) / DEG2RAD(MPU6050_GGAIN);
 	imu->gyro.z = (float)(gyro_raw_z) / DEG2RAD(MPU6050_GGAIN);
+}
+
+char imu_calibrated() 
+{
+	return imu_is_calibrated;
 }
 
 Imu_t* mpu6050_getData(void)
