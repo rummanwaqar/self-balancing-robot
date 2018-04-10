@@ -10,7 +10,8 @@ UUID = '0000FFE1-0000-1000-8000-00805F9B34FB'
 ser = serial.Serial('/dev/ttyUSB3', 115200)
 
 def handle_data(handle, value):
-	print("Data: %s" % value)
+	if(value[:1] == '='):
+		print("Data: %s" % value)
 	ser.write(value)
 
 
