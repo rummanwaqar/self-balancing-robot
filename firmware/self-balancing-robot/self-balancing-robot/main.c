@@ -112,7 +112,6 @@ int main(void)
 			if(abs(motor2.effort) < MOTOR_MIN_EFFORT) motor2.effort = 0;
 			
 			motor_set_speed(motor1.effort, motor2.effort);
-			
 		}
 		
 		// display uart
