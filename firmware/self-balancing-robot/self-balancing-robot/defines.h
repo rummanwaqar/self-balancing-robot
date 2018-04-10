@@ -64,6 +64,12 @@
 #define PID_M_I				0.5f
 #define PID_M_D				2.0f
 
+// Pitch PID param
+#define PID_P_I_WINDUP		500
+#define PID_P_P				800.0f
+#define PID_P_I				0.0f
+#define PID_P_D				0.0f
+
 // MPU6050 settings
 #define MPU6050_ADDR		(0x68 <<1)				// device address - 0x68 pin low (GND), 0x69 pin high (VCC)
 #define MPU6050_GYRO_FS		MPU6050_GYRO_FS_2000	// gyro scale
@@ -150,7 +156,8 @@ typedef struct {
 typedef enum {
 	CMD_NULL, 
 	CMD_M1, CMD_M2, CMD_M_P, CMD_M_I, CMD_M_D, 
-	CMD_DISP_IMU, CMD_DISP_QUAT, CMD_DISP_RPY, CMD_DISP_MVEL, CMD_DISP_MPID, CMD_DISP_MENC
+	CMD_DISP_IMU, CMD_DISP_QUAT, CMD_DISP_RPY, CMD_DISP_MVEL, CMD_DISP_MPID, CMD_DISP_MENC,
+	CMD_P_P, CMD_P_I, CMD_P_D
 } Command_t;
 
 #endif /* DEFINES_H_ */

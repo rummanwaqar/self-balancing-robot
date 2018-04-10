@@ -48,6 +48,12 @@ int main(void)
 	pid_init(m_p, m_i, m_d, PID_M_I_WINDUP, MOTOR_MAX_EFFORT, &motor1.pidData);
 	pid_init(m_p, m_i, m_d, PID_M_I_WINDUP, MOTOR_MAX_EFFORT, &motor2.pidData);
 	
+	// initialize pitch pid
+	PidData_t pitchPid;
+	float p_p=PID_P_P, p_i=PID_P_I, p_d=PID_P_D;
+	pid_init(p_p, p_i, p_d, PID_P_I_WINDUP, MOTOR_MAX_EFFORT, &pitchPid);
+	char pitch_control = 1;
+	
 	Imu_t* imu_data;	// raw imu data
 	Vector3_t rpy;		// roll pitch yaw information
 
@@ -79,14 +85,19 @@ int main(void)
 				PORT(LED_PORT) &= ~(_BV(LED_RED));
 			}
 			
-			if(fabs(rpy.y) > 0.5 && imu_calibrated())
+			if(pitch_control)
 			{
+				if(fabs(rpy.y) < 0.5 && imu_calibrated())
+				{
 				//
-			}
-			else
-			{
-				motor1.set_point = 0;
-				motor2.set_point = 0;
+					motor1.set_point = -1 * pid_controller(0, rpy.y, &pitchPid);	// motor1 and motor2 currently run opp
+					motor2.set_point = -1 * motor1.set_point;
+				}
+				else
+				{
+					motor1.set_point = 0;
+					motor2.set_point = 0;
+				}
 			}
 		} 
 		
@@ -99,6 +110,7 @@ int main(void)
 			// motor effort
 			if(abs(motor1.effort) < MOTOR_MIN_EFFORT) motor1.effort = 0;
 			if(abs(motor2.effort) < MOTOR_MIN_EFFORT) motor2.effort = 0;
+			
 			motor_set_speed(motor1.effort, motor2.effort);
 			
 		}
@@ -118,10 +130,12 @@ int main(void)
 			switch (cmd)
 			{
 				case CMD_M1:
+					pitch_control = 0;
 					printf("=Motor1:%d\n", value);
 					motor1.set_point = value;
 					break;
 				case CMD_M2:
+					pitch_control = 0;
 					printf("=Motor2:%d\n", value);
 					motor2.set_point = value;
 					break;
@@ -166,6 +180,24 @@ int main(void)
 				case CMD_DISP_MENC:
 					printf("=Display motor enc:%d\n", value);
 					disp_flags.motor_enc = value;
+					break;
+				case CMD_P_P:
+					printf("=Pitch P:%d\n", value);
+					p_p = (float)value;
+					pitchPid.P_Factor = p_p;
+					pid_reset(&pitchPid);
+					break;
+				case CMD_P_I:
+					printf("=Pitch I:%d\n", value);
+					p_i = (float)value;
+					pitchPid.I_Factor = p_i;
+					pid_reset(&pitchPid);
+					break;
+				case CMD_P_D:
+					printf("=Pitch D:%d\n", value);
+					p_d = (float)value;
+					pitchPid.D_Factor = p_d;
+					pid_reset(&pitchPid);
 					break;
 				default:
 					break;	

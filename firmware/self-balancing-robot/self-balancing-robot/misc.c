@@ -147,6 +147,21 @@ Command_t parseCommand(char* input_string, int* value)
 					return CMD_DISP_MENC;
 				}
 			}
+			else if (strcmp(command, "p_p") == 0)
+			{
+				*value = temp_val;
+				return CMD_P_P;
+			}
+			else if (strcmp(command, "p_i") == 0)
+			{
+				*value = temp_val;
+				return CMD_P_I;
+			}
+			else if (strcmp(command, "p_d") == 0)
+			{
+				*value = temp_val;
+				return CMD_P_D;
+			}
 		}
 	}
 	return CMD_NULL;
