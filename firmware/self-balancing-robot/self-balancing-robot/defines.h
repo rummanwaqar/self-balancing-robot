@@ -66,9 +66,9 @@
 
 // Pitch PID param
 #define PID_P_I_WINDUP		500
-#define PID_P_P				800.0f
-#define PID_P_I				0.0f
-#define PID_P_D				0.0f
+#define PID_P_P				650.0f
+#define PID_P_I				100.0f
+#define PID_P_D				1300.0f
 
 // MPU6050 settings
 #define MPU6050_ADDR		(0x68 <<1)				// device address - 0x68 pin low (GND), 0x69 pin high (VCC)
